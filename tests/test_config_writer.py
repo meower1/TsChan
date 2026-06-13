@@ -25,6 +25,12 @@ class TestGenerateEnv:
         env = generate_env(config)
         assert config.debug_token in env
 
+    def test_contains_host_file_ownership(self):
+        config = SetupConfig(server_name="test")
+        env = generate_env(config)
+        assert "TSCHAN_PUID=" in env
+        assert "TSCHAN_PGID=" in env
+
     def test_music_bot_enabled(self):
         config = SetupConfig(
             server_name="test",
@@ -50,6 +56,17 @@ class TestGenerateDockerCompose:
         config = SetupConfig(server_name="test")
         compose = generate_docker_compose(config)
         assert "teamspeak" in compose
+
+    def test_sets_serveradmin_password(self):
+        config = SetupConfig(server_name="test")
+        compose = generate_docker_compose(config)
+        assert f"serveradmin_password={config.query_password}" in compose
+
+    def test_sets_container_file_ownership(self):
+        config = SetupConfig(server_name="test")
+        compose = generate_docker_compose(config)
+        assert "PUID" in compose
+        assert "PGID" in compose
 
     def test_music_bot_services_included(self):
         config = SetupConfig(

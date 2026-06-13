@@ -14,6 +14,7 @@ Public API
 from __future__ import annotations
 
 import json
+import os
 import textwrap
 from pathlib import Path
 from typing import Any
@@ -21,6 +22,7 @@ from typing import Any
 from tschan.constants import (
     COMPOSE_FILE,
     DATA_DIR,
+    DEFAULT_AUDIOBOT_IMAGE,
     DEFAULT_FILE_PORT,
     DEFAULT_MAX_CLIENTS,
     DEFAULT_PIP_INDEX,
@@ -31,6 +33,7 @@ from tschan.constants import (
     DEFAULT_VOICE_PORT,
     DOCKER_NETWORK,
     ENV_FILE,
+    IRAN_AUDIOBOT_IMAGE,
     IRAN_PIP_INDEX,
     IRAN_PYTHON_IMAGE,
     IRAN_TS3_IMAGE,
@@ -85,6 +88,10 @@ def generate_env(config: SetupConfig) -> str:
         f"PYTHON_IMAGE={python_image}",
         f"PIP_INDEX_URL={pip_index}",
         "",
+        "# Host file ownership",
+        f"TSCHAN_PUID={os.getuid()}",
+        f"TSCHAN_PGID={os.getgid()}",
+        "",
         "# Mirrors",
         f"IRAN_MIRRORS={'true' if config.iran_mirrors else 'false'}",
         "",
@@ -132,7 +139,12 @@ def _build_teamspeak_service(config: SetupConfig) -> dict[str, Any]:
         "environment": {
             "TS3SERVER_LICENSE": "accept",
             "TS3SERVER_QUERY_PROTOCOLS": "raw,ssh",
+            "PUID": "${TSCHAN_PUID}",
+            "PGID": "${TSCHAN_PGID}",
         },
+        "command": [
+            f"serveradmin_password={config.query_password}",
+        ],
         "volumes": [
             f"./{DATA_DIR}:/data",
         ],

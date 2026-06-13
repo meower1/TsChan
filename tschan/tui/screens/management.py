@@ -27,15 +27,15 @@ class ConfirmUninstallScreen(Screen):
         with Vertical(classes="confirm-dialog"):
             with Vertical(classes="confirm-box"):
                 yield Static(
-                    "[bold #f87171]⚠ Uninstall Server ⚠[/]",
+                    "[bold #f85149]Uninstall Server[/]",
                     classes="confirm-title",
                 )
                 yield Static(
-                    "[#e8e0f0]Are you sure? This will:[/]\n\n"
-                    "  [#f87171]•[/] Stop all Docker containers\n"
-                    "  [#f87171]•[/] Delete ALL server data\n"
-                    "  [#f87171]•[/] Remove configuration files\n\n"
-                    "[bold #f87171]This action cannot be undone![/]",
+                    "[#d8dee9]Are you sure? This will:[/]\n\n"
+                    "  [#f85149]•[/] Stop all Docker containers\n"
+                    "  [#f85149]•[/] Delete ALL server data\n"
+                    "  [#f85149]•[/] Remove configuration files\n\n"
+                    "[bold #f85149]This action cannot be undone.[/]",
                     classes="confirm-message",
                 )
                 with Horizontal(classes="confirm-buttons"):
@@ -45,7 +45,7 @@ class ConfirmUninstallScreen(Screen):
                         variant="primary",
                     )
                     yield Button(
-                        "🗑 Yes, Uninstall",
+                        "Yes, Uninstall",
                         id="btn-confirm-uninstall",
                         variant="error",
                     )
@@ -71,16 +71,17 @@ class ManagementScreen(Screen):
         ("l", "toggle_logs", "Logs"),
     ]
 
-    def __init__(self, config: SetupConfig) -> None:
+    def __init__(self, config: SetupConfig, project_dir: Path) -> None:
         super().__init__()
         self.config = config
+        self.project_dir = Path(project_dir).expanduser().resolve()
         self._refresh_timer: Timer | None = None
 
     def compose(self) -> ComposeResult:
         yield Header()
 
         yield Static(
-            "[bold #ff8fab]🌸 tschan管理パネル 🌸[/]",
+            "[bold #f0f6fc]tschan Management[/]",
             classes="step-title",
         )
 
@@ -105,49 +106,49 @@ class ManagementScreen(Screen):
             # ── Action Buttons ───────────────────────────────────
             with Grid(classes="management-grid"):
                 yield Button(
-                    "▶ Start Server",
+                    "Start Server",
                     id="btn-start",
                     variant="success",
                     classes="management-action",
                 )
                 yield Button(
-                    "⏹ Stop Server",
+                    "Stop Server",
                     id="btn-stop",
                     variant="error",
                     classes="management-action",
                 )
                 yield Button(
-                    "🔄 Restart Server",
+                    "Restart Server",
                     id="btn-restart",
                     variant="warning",
                     classes="management-action",
                 )
                 yield Button(
-                    "📊 Refresh Status",
+                    "Refresh Status",
                     id="btn-refresh",
                     variant="default",
                     classes="management-action",
                 )
                 yield Button(
-                    "📋 View Logs",
+                    "View Logs",
                     id="btn-logs",
                     variant="default",
                     classes="management-action",
                 )
                 yield Button(
-                    "🔑 New Privilege Key",
+                    "New Privilege Key",
                     id="btn-key",
                     variant="default",
                     classes="management-action",
                 )
                 yield Button(
-                    "🗑 Uninstall",
+                    "Uninstall",
                     id="btn-uninstall",
                     variant="error",
                     classes="management-action",
                 )
                 yield Button(
-                    "❌ Exit",
+                    "Exit",
                     id="btn-exit",
                     variant="default",
                     classes="management-action",
@@ -180,7 +181,8 @@ class ManagementScreen(Screen):
         """Display the server name in the status bar."""
         name_widget = self.query_one("#status-server-name", Static)
         name_widget.update(
-            f"[bold #ff8fab]Server:[/] [#faf5ff]{self.config.server_name}[/]"
+            f"[bold #f0f6fc]Server:[/] [#d8dee9]{self.config.server_name}[/]\n"
+            f"[bold #f0f6fc]Project:[/] [#8b949e]{self.project_dir}[/]"
         )
 
     @work(thread=True, exclusive=True, group="status")
@@ -189,19 +191,19 @@ class ManagementScreen(Screen):
         try:
             from tschan.engine.docker_ctl import DockerController
 
-            docker = DockerController(Path.cwd())
+            docker = DockerController(self.project_dir)
             is_running = docker.is_running()
             containers = docker.get_containers()
 
             if is_running:
-                status_text = "[bold #34d399]● Running[/]"
+                status_text = "[bold #3fb950]● Running[/]"
                 container_info = "  ".join(
-                    f"[#9ca3af]{c.name}:[/] [#34d399]{c.status}[/]"
+                    f"[#8b949e]{c.name}:[/] [#3fb950]{c.status}[/]"
                     for c in containers
                 )
             else:
-                status_text = "[bold #f87171]● Stopped[/]"
-                container_info = "[#9ca3af]No containers running[/]"
+                status_text = "[bold #f85149]● Stopped[/]"
+                container_info = "[#8b949e]No containers running[/]"
 
             self.call_from_thread(
                 self._set_status, status_text, container_info
@@ -223,22 +225,22 @@ class ManagementScreen(Screen):
                     client.disconnect()
                     self.call_from_thread(
                         self._set_clients,
-                        f"[#a78bfa]Clients:[/] [#faf5ff]{info.clients_online}"
+                        f"[#8b949e]Clients:[/] [#f0f6fc]{info.clients_online}"
                         f"/{info.max_clients}[/]  ·  "
-                        f"[#a78bfa]Uptime:[/] [#faf5ff]"
+                        f"[#8b949e]Uptime:[/] [#f0f6fc]"
                         f"{info.uptime_seconds // 3600}h "
                         f"{(info.uptime_seconds % 3600) // 60}m[/]",
                     )
                 except Exception:
                     self.call_from_thread(
                         self._set_clients,
-                        "[#9ca3af]Could not query server info[/]",
+                        "[#8b949e]Could not query server info[/]",
                     )
         except Exception as exc:
             self.call_from_thread(
                 self._set_status,
-                "[bold #f87171]● Error[/]",
-                f"[#f87171]{exc}[/]",
+                "[bold #f85149]● Error[/]",
+                f"[#f85149]{exc}[/]",
             )
 
     def _set_status(self, status_text: str, container_info: str) -> None:
@@ -291,7 +293,7 @@ class ManagementScreen(Screen):
 
     def action_refresh_status(self) -> None:
         self._refresh_status()
-        self.notify("Refreshing status...", title="📊")
+        self.notify("Refreshing status...", title="Status")
 
     def action_toggle_logs(self) -> None:
         """Toggle log viewer visibility and fetch logs."""
@@ -310,39 +312,39 @@ class ManagementScreen(Screen):
         try:
             from tschan.engine.docker_ctl import DockerController
 
-            docker = DockerController(Path.cwd())
+            docker = DockerController(self.project_dir)
 
             if action == "start":
                 self.call_from_thread(
-                    self.notify, "Starting server...", title="▶"
+                    self.notify, "Starting server...", title="Start"
                 )
                 docker.compose_up(build=False)
                 self.call_from_thread(
                     self.notify,
-                    "Server started! (◕‿◕✿)",
-                    title="✓",
+                    "Server started.",
+                    title="Done",
                     severity="information",
                 )
             elif action == "stop":
                 self.call_from_thread(
-                    self.notify, "Stopping server...", title="⏹"
+                    self.notify, "Stopping server...", title="Stop"
                 )
                 docker.compose_down(volumes=False)
                 self.call_from_thread(
                     self.notify,
                     "Server stopped.",
-                    title="✓",
+                    title="Done",
                     severity="information",
                 )
             elif action == "restart":
                 self.call_from_thread(
-                    self.notify, "Restarting server...", title="🔄"
+                    self.notify, "Restarting server...", title="Restart"
                 )
                 docker.compose_restart()
                 self.call_from_thread(
                     self.notify,
-                    "Server restarted! (◕‿◕✿)",
-                    title="✓",
+                    "Server restarted.",
+                    title="Done",
                     severity="information",
                 )
 
@@ -353,7 +355,7 @@ class ManagementScreen(Screen):
             self.call_from_thread(
                 self.notify,
                 f"Docker error: {exc}",
-                title="✗",
+                title="Error",
                 severity="error",
             )
 
@@ -363,7 +365,7 @@ class ManagementScreen(Screen):
         try:
             from tschan.engine.docker_ctl import DockerController
 
-            docker = DockerController(Path.cwd())
+            docker = DockerController(self.project_dir)
             logs = docker.compose_logs(tail=100)
             self.call_from_thread(self._display_logs, logs)
         except Exception as exc:
@@ -386,7 +388,7 @@ class ManagementScreen(Screen):
             from tschan.engine.ts3_query import TS3QueryClient
 
             self.call_from_thread(
-                self.notify, "Generating privilege key...", title="🔑"
+                self.notify, "Generating privilege key...", title="Privilege key"
             )
 
             client = TS3QueryClient(
@@ -405,7 +407,7 @@ class ManagementScreen(Screen):
             self.call_from_thread(
                 self.notify,
                 f"Failed to generate key: {exc}",
-                title="✗",
+                title="Error",
                 severity="error",
             )
 
@@ -413,7 +415,9 @@ class ManagementScreen(Screen):
         """Show the new privilege key in a popup screen."""
         from tschan.tui.screens.privilege_key import PrivilegeKeyScreen
 
-        self.app.push_screen(PrivilegeKeyScreen(key, self.config))
+        self.app.push_screen(
+            PrivilegeKeyScreen(key, self.project_dir, self.config.server_name)
+        )
 
     def _confirm_uninstall(self) -> None:
         """Show the uninstall confirmation dialog."""
@@ -429,10 +433,10 @@ class ManagementScreen(Screen):
         """Perform the actual uninstall."""
         try:
             self.call_from_thread(
-                self.notify, "Uninstalling server...", title="🗑"
+                self.notify, "Uninstalling server...", title="Uninstall"
             )
 
-            project_dir = Path.cwd()
+            project_dir = self.project_dir
 
             # Stop containers and remove volumes
             from tschan.engine.docker_ctl import DockerController
@@ -456,8 +460,8 @@ class ManagementScreen(Screen):
 
             self.call_from_thread(
                 self.notify,
-                "Server uninstalled successfully. Goodbye! (◕‿◕)",
-                title="✓",
+                "Server uninstalled successfully.",
+                title="Done",
                 severity="information",
             )
 
@@ -471,6 +475,6 @@ class ManagementScreen(Screen):
             self.call_from_thread(
                 self.notify,
                 f"Uninstall error: {exc}",
-                title="✗",
+                title="Error",
                 severity="error",
             )

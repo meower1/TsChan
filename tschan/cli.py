@@ -29,9 +29,13 @@ def main() -> int:
     )
     args = parser.parse_args()
 
+    from tschan.project import resolve_project_dir
     from tschan.tui.app import TschanApp
 
-    app = TschanApp(force_setup=args.setup)
+    app = TschanApp(
+        force_setup=args.setup,
+        project_dir=resolve_project_dir(),
+    )
     app.run()
     return 0
 
