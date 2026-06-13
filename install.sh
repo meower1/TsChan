@@ -95,25 +95,30 @@ do_install() {
         cd "$INSTALL_DIR"
     fi
 
+    info "Creating virtual environment..."
+    $PYTHON_CMD -m venv .venv || die "Failed to create virtual environment. Ensure 'python3-venv' is installed (e.g., sudo apt install python3-venv)."
+
     info "Installing Python package..."
-    $PYTHON_CMD -m pip install --user -q -e . || die "Failed to install tschan package."
+    ./.venv/bin/pip install -q -e . || die "Failed to install tschan package."
 
     # Verify installation
-    if command -v tschan &>/dev/null; then
-        ok "tschan installed successfully!"
-    else
-        # Might need to add ~/.local/bin to PATH
-        local bin_dir="$($PYTHON_CMD -m site --user-base)/bin"
-        if [ -f "$bin_dir/tschan" ]; then
+    if [ -f "./.venv/bin/tschan" ]; then
+        local bin_dir="$HOME/.local/bin"
+        mkdir -p "$bin_dir"
+        ln -sf "$INSTALL_DIR/.venv/bin/tschan" "$bin_dir/tschan"
+        
+        if command -v tschan &>/dev/null; then
+            ok "tschan installed successfully!"
+        else
             echo ""
             echo -e "${PINK}${BOLD}Almost there!${NC} Add this to your shell profile (~/.bashrc or ~/.zshrc):"
             echo ""
             echo -e "  export PATH=\"$bin_dir:\$PATH\""
             echo ""
             ok "tschan installed to $bin_dir/tschan"
-        else
-            die "Installation completed but 'tschan' command not found."
         fi
+    else
+        die "Installation completed but 'tschan' command not found."
     fi
 
     echo ""
