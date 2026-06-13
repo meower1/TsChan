@@ -5,9 +5,9 @@
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 set -euo pipefail
 
-REPO_URL="https://github.com/meower1/tschan.git"
-INSTALL_DIR="${TSCHAN_INSTALL_DIR:-$HOME/.tschan}"
+REPO_URL="https://github.com/meower1/TsChan.git"
 MIN_PYTHON="3.10"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # ── Colors ──────────────────────────────────
 RED='\033[0;31m'
@@ -34,6 +34,19 @@ info()  { echo -e "${CYAN}[info]${NC}  $*"; }
 ok()    { echo -e "${GREEN}[✓]${NC}     $*"; }
 err()   { echo -e "${RED}[✗]${NC}     $*" >&2; }
 die()   { err "$@"; exit 1; }
+
+check_not_root() {
+    if [ "${EUID:-$(id -u)}" -eq 0 ]; then
+        local target_user="${SUDO_USER:-<your-user>}"
+        die "Do not run this installer as root. Run it as your normal user:
+  cd /path/to/TsChan
+  ./install.sh
+
+If Docker permission fails, add the user to the docker group:
+  sudo usermod -aG docker ${target_user}
+  newgrp docker"
+    fi
+}
 
 # ── Checks ──────────────────────────────────
 check_python() {
@@ -74,23 +87,43 @@ check_git() {
     ok "Git found"
 }
 
+install_python_package() {
+    if ./.venv/bin/pip install -q -e .; then
+        return
+    fi
+
+    info "Default Python package index failed. Retrying with pypi.devneeds.ir..."
+    PIP_INDEX_URL="https://pypi.devneeds.ir/simple/" \
+    PIP_DEFAULT_TIMEOUT=60 \
+        ./.venv/bin/pip install -q -e . \
+        || die "Failed to install tschan package."
+}
+
 # ── Install ─────────────────────────────────
 do_install() {
     print_banner
 
     info "Checking prerequisites..."
+    check_not_root
     check_python
     check_docker
     check_git
 
     echo ""
-    info "Installing tschan to ${INSTALL_DIR}..."
+    if [ -f "$SCRIPT_DIR/pyproject.toml" ] && [ -d "$SCRIPT_DIR/tschan" ]; then
+        INSTALL_DIR="${TSCHAN_INSTALL_DIR:-$SCRIPT_DIR}"
+        info "Installing tschan from local checkout: ${INSTALL_DIR}"
+        cd "$INSTALL_DIR"
+    else
+        INSTALL_DIR="${TSCHAN_INSTALL_DIR:-$HOME/.tschan}"
+        info "Installing tschan to ${INSTALL_DIR}..."
+    fi
 
-    if [ -d "$INSTALL_DIR" ]; then
+    if [ "$INSTALL_DIR" != "$SCRIPT_DIR" ] && [ -d "$INSTALL_DIR" ]; then
         info "Updating existing installation..."
         cd "$INSTALL_DIR"
         git pull --ff-only || die "Failed to update. Try removing $INSTALL_DIR and re-running."
-    else
+    elif [ "$INSTALL_DIR" != "$SCRIPT_DIR" ]; then
         git clone "$REPO_URL" "$INSTALL_DIR" || die "Failed to clone repository."
         cd "$INSTALL_DIR"
     fi
@@ -99,7 +132,7 @@ do_install() {
     $PYTHON_CMD -m venv .venv || die "Failed to create virtual environment. Ensure 'python3-venv' is installed (e.g., sudo apt install python3-venv)."
 
     info "Installing Python package..."
-    ./.venv/bin/pip install -q -e . || die "Failed to install tschan package."
+    install_python_package
 
     # Verify installation
     if [ -f "./.venv/bin/tschan" ]; then
