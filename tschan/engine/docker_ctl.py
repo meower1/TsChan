@@ -14,7 +14,7 @@ from __future__ import annotations
 import json
 import subprocess
 from pathlib import Path
-from typing import Any
+from typing import Any, Callable
 
 from tschan.models import ContainerInfo
 
@@ -93,13 +93,73 @@ class DockerController:
             )
         return result
 
+    def _run_streaming(
+        self,
+        args: list[str],
+        *,
+        check: bool = True,
+        timeout: int | None = 120,
+        on_output: Callable[[str], None] | None = None,
+    ) -> subprocess.CompletedProcess[str]:
+        """Run a compose command while streaming combined stdout/stderr."""
+        cmd = ["docker", "compose", *args]
+        try:
+            process = subprocess.Popen(
+                cmd,
+                cwd=self.project_dir,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
+                text=True,
+                bufsize=1,
+            )
+        except FileNotFoundError as exc:
+            raise DockerError(
+                "docker CLI not found – is Docker installed and on PATH?"
+            ) from exc
+
+        output_parts: list[str] = []
+        assert process.stdout is not None
+        try:
+            for line in process.stdout:
+                output_parts.append(line)
+                if on_output is not None:
+                    on_output(line.rstrip("\n"))
+            returncode = process.wait(timeout=timeout)
+        except subprocess.TimeoutExpired as exc:
+            process.kill()
+            process.wait()
+            raise DockerError(
+                f"Command timed out after {timeout}s: {' '.join(cmd)}"
+            ) from exc
+
+        output = "".join(output_parts)
+        result = subprocess.CompletedProcess(
+            cmd,
+            returncode,
+            stdout=output,
+            stderr="",
+        )
+        if check and returncode != 0:
+            raise DockerError(
+                f"Command failed (exit {returncode}): {' '.join(cmd)}",
+                returncode=returncode,
+                stderr=output,
+            )
+        return result
+
     # ── Public compose operations ────────────────────────────────────────
 
-    def compose_up(self, build: bool = True) -> subprocess.CompletedProcess[str]:
+    def compose_up(
+        self,
+        build: bool = True,
+        *,
+        on_output: Callable[[str], None] | None = None,
+    ) -> subprocess.CompletedProcess[str]:
         """Start the stack in detached mode.
 
         Args:
             build: Pass ``--build`` to rebuild images.
+            on_output: Optional callback for streaming Docker output.
 
         Returns:
             The completed process result.
@@ -107,6 +167,8 @@ class DockerController:
         args = ["up", "-d"]
         if build:
             args.append("--build")
+        if on_output is not None:
+            return self._run_streaming(args, timeout=300, on_output=on_output)
         return self._run(args, timeout=300)
 
     def compose_down(self, volumes: bool = False) -> subprocess.CompletedProcess[str]:

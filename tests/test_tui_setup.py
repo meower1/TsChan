@@ -128,6 +128,10 @@ def test_deploy_progress_marks_active_done_and_error(tmp_path: Path):
         async with app.run_test(size=(120, 40)):
             screen = app.screen
             assert isinstance(screen, DeployNoRunScreen)
+            screen._prepare_log_file()
+            screen._append_log_line("manual log entry")
+            assert (tmp_path / "tschan-deploy.log").exists()
+            assert "manual log entry" in (tmp_path / "tschan-deploy.log").read_text()
 
             screen._set_step_active(0)
             assert screen._active_step_index == 0
@@ -143,5 +147,8 @@ def test_deploy_progress_marks_active_done_and_error(tmp_path: Path):
             screen._show_error("boom")
             assert screen._failed is True
             assert "boom" in str(screen.query_one("#deploy-error", Static).content)
+            log_text = (tmp_path / "tschan-deploy.log").read_text()
+            assert "Step 1/" in log_text
+            assert "Deployment failed" in log_text
 
     run_async(scenario())
