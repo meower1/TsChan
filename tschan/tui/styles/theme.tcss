@@ -1,0 +1,616 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   🌸 tschan — Anime Waifu Terminal Theme
+   ═══════════════════════════════════════════════════════════════════════════
+   Palette:
+     bg-deep      #0d0b1a     bg-surface   #1a1225     bg-panel   #231836
+     pink-500     #ff6b9d     pink-400     #ff8fab     pink-300   #ffb3c6
+     lavender-500 #c084fc     lavender-400 #a78bfa     lavender-300 #c4b5fd
+     gold-400     #fbbf24     cream-100    #fef3c7
+     mint-400     #34d399     mint-500     #10b981
+     coral-400    #f87171     coral-500    #ef4444
+     text-bright  #faf5ff     text-main    #e8e0f0     text-muted #9ca3af
+     border-dim   #2d2640     border-mid   #3d2f5c
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+
+/* ── Global Defaults ─────────────────────────────────────────────────────── */
+
+Screen {
+    background: #0d0b1a;
+    color: #e8e0f0;
+}
+
+* {
+    scrollbar-background: #1a1225;
+    scrollbar-color: #3d2f5c;
+    scrollbar-color-hover: #c084fc;
+    scrollbar-color-active: #ff6b9d;
+}
+
+
+/* ── Header & Footer ─────────────────────────────────────────────────────── */
+
+Header {
+    background: #1a1225;
+    color: #ff8fab;
+    dock: top;
+    text-style: bold;
+}
+
+HeaderIcon {
+    color: #ff6b9d;
+}
+
+Footer {
+    background: #1a1225;
+    color: #a78bfa;
+}
+
+FooterKey {
+    background: #231836;
+    color: #c084fc;
+}
+
+FooterKey:hover {
+    background: #3d2f5c;
+    color: #ff8fab;
+}
+
+
+/* ── Buttons ─────────────────────────────────────────────────────────────── */
+
+Button {
+    background: #231836;
+    color: #e8e0f0;
+    border: tall #3d2f5c;
+    min-width: 16;
+    margin: 0 1;
+}
+
+Button:hover {
+    background: #3d2f5c;
+    color: #faf5ff;
+    border: tall #c084fc;
+}
+
+Button:focus {
+    border: tall #ff6b9d;
+    text-style: bold;
+}
+
+Button.-primary {
+    background: #ff6b9d;
+    color: #0d0b1a;
+    border: tall #ff8fab;
+    text-style: bold;
+}
+
+Button.-primary:hover {
+    background: #ff8fab;
+    color: #0d0b1a;
+    border: tall #ffb3c6;
+}
+
+Button.-success {
+    background: #10b981;
+    color: #0d0b1a;
+    border: tall #34d399;
+    text-style: bold;
+}
+
+Button.-success:hover {
+    background: #34d399;
+    color: #0d0b1a;
+}
+
+Button.-error {
+    background: #ef4444;
+    color: #faf5ff;
+    border: tall #f87171;
+    text-style: bold;
+}
+
+Button.-error:hover {
+    background: #f87171;
+    color: #faf5ff;
+}
+
+Button.-warning {
+    background: #fbbf24;
+    color: #0d0b1a;
+    border: tall #fef3c7;
+    text-style: bold;
+}
+
+Button.-warning:hover {
+    background: #fef3c7;
+    color: #0d0b1a;
+}
+
+
+/* ── Input Fields ────────────────────────────────────────────────────────── */
+
+Input {
+    background: #1a1225;
+    color: #e8e0f0;
+    border: tall #2d2640;
+    padding: 0 1;
+}
+
+Input:focus {
+    border: tall #ff6b9d;
+    background: #231836;
+}
+
+Input.-valid {
+    border: tall #34d399;
+}
+
+Input.-invalid {
+    border: tall #f87171;
+}
+
+Input > .input--placeholder {
+    color: #9ca3af;
+}
+
+Input > .input--cursor {
+    color: #ff6b9d;
+    text-style: reverse;
+}
+
+
+/* ── TextArea ────────────────────────────────────────────────────────────── */
+
+TextArea {
+    background: #1a1225;
+    border: tall #2d2640;
+}
+
+TextArea:focus {
+    border: tall #ff6b9d;
+    background: #231836;
+}
+
+
+/* ── Switch ──────────────────────────────────────────────────────────────── */
+
+Switch {
+    background: #2d2640;
+    border: tall #3d2f5c;
+}
+
+Switch:focus {
+    border: tall #ff6b9d;
+}
+
+Switch.-on {
+    background: #ff6b9d;
+}
+
+Switch.-on > .switch--slider {
+    color: #faf5ff;
+}
+
+
+/* ── Radio & Checkbox ────────────────────────────────────────────────────── */
+
+RadioButton {
+    background: transparent;
+    color: #e8e0f0;
+    padding: 0 2;
+}
+
+RadioButton:hover {
+    color: #ff8fab;
+}
+
+RadioButton:focus {
+    text-style: bold;
+    color: #faf5ff;
+}
+
+RadioSet {
+    background: #1a1225;
+    border: tall #2d2640;
+    padding: 1;
+}
+
+RadioSet:focus-within {
+    border: tall #c084fc;
+}
+
+Checkbox {
+    background: transparent;
+    color: #e8e0f0;
+    padding: 0 2;
+}
+
+Checkbox:hover {
+    color: #ff8fab;
+}
+
+Checkbox:focus {
+    text-style: bold;
+    color: #faf5ff;
+}
+
+
+/* ── ProgressBar ─────────────────────────────────────────────────────────── */
+
+ProgressBar {
+    padding: 1 0;
+}
+
+ProgressBar > .bar--bar {
+    color: #ff6b9d;
+    background: #2d2640;
+}
+
+ProgressBar > .bar--complete {
+    color: #34d399;
+}
+
+
+/* ── DataTable ───────────────────────────────────────────────────────────── */
+
+DataTable {
+    background: #1a1225;
+    color: #e8e0f0;
+}
+
+DataTable > .datatable--header {
+    background: #231836;
+    color: #ff8fab;
+    text-style: bold;
+}
+
+DataTable > .datatable--cursor {
+    background: #3d2f5c;
+    color: #faf5ff;
+}
+
+DataTable > .datatable--hover {
+    background: #2d2640;
+}
+
+
+/* ── RichLog ─────────────────────────────────────────────────────────────── */
+
+RichLog {
+    background: #0d0b1a;
+    color: #e8e0f0;
+    border: tall #2d2640;
+    padding: 0 1;
+    scrollbar-background: #1a1225;
+}
+
+RichLog:focus {
+    border: tall #c084fc;
+}
+
+
+/* ── Static Labels ───────────────────────────────────────────────────────── */
+
+Static {
+    color: #e8e0f0;
+}
+
+
+/* ── Containers ──────────────────────────────────────────────────────────── */
+
+#app-title {
+    text-align: center;
+    text-style: bold;
+    color: #ff8fab;
+    padding: 1 0;
+}
+
+
+/* ── Step Indicator ──────────────────────────────────────────────────────── */
+
+#step-indicator {
+    height: 3;
+    dock: top;
+    background: #1a1225;
+    padding: 1 2;
+    color: #9ca3af;
+    text-align: center;
+    border-bottom: solid #2d2640;
+}
+
+
+/* ── Wizard Layout ───────────────────────────────────────────────────────── */
+
+.wizard-content {
+    padding: 2 4;
+    height: 1fr;
+    overflow-y: auto;
+}
+
+.wizard-nav {
+    dock: bottom;
+    height: 3;
+    background: #1a1225;
+    border-top: solid #2d2640;
+    padding: 0 2;
+    layout: horizontal;
+    align: center middle;
+}
+
+.step-title {
+    text-align: center;
+    text-style: bold;
+    color: #ff8fab;
+    padding: 1 0 0 0;
+    width: 100%;
+}
+
+.step-subtitle {
+    text-align: center;
+    color: #9ca3af;
+    padding: 0 0 1 0;
+    width: 100%;
+}
+
+.helper-text {
+    color: #a78bfa;
+    padding: 1 0;
+}
+
+.error-text {
+    color: #f87171;
+    text-style: bold;
+    padding: 1 0;
+}
+
+.success-text {
+    color: #34d399;
+    text-style: bold;
+    padding: 1 0;
+}
+
+.muted-text {
+    color: #9ca3af;
+}
+
+
+/* ── Review Screen ───────────────────────────────────────────────────────── */
+
+.review-section {
+    background: #1a1225;
+    border: tall #2d2640;
+    padding: 1 2;
+    margin: 1 0;
+}
+
+.review-section:hover {
+    border: tall #3d2f5c;
+}
+
+.review-label {
+    color: #ff8fab;
+    text-style: bold;
+    padding: 0 0 1 0;
+}
+
+.review-value {
+    color: #e8e0f0;
+    padding: 0 0 0 2;
+}
+
+.review-edit {
+    color: #a78bfa;
+    text-style: underline;
+}
+
+
+/* ── Deploy Screen ───────────────────────────────────────────────────────── */
+
+.deploy-container {
+    padding: 2 4;
+    height: 1fr;
+    align: center middle;
+}
+
+.deploy-step {
+    padding: 0 2;
+    color: #9ca3af;
+    height: auto;
+}
+
+.deploy-step.--done {
+    color: #34d399;
+}
+
+.deploy-step.--active {
+    color: #ff8fab;
+    text-style: bold;
+}
+
+.deploy-step.--error {
+    color: #f87171;
+    text-style: bold;
+}
+
+
+/* ── Privilege Key Screen ────────────────────────────────────────────────── */
+
+.key-display {
+    text-align: center;
+    background: #231836;
+    border: tall #ff6b9d;
+    padding: 2 4;
+    margin: 2 8;
+    color: #fbbf24;
+    text-style: bold;
+}
+
+.key-instructions {
+    padding: 1 4;
+    color: #e8e0f0;
+}
+
+.key-step-num {
+    color: #ff8fab;
+    text-style: bold;
+}
+
+
+/* ── Management Panel ────────────────────────────────────────────────────── */
+
+.status-bar {
+    background: #1a1225;
+    border: tall #2d2640;
+    padding: 1 2;
+    height: auto;
+    margin: 0 0 1 0;
+}
+
+.status-label {
+    color: #ff8fab;
+    text-style: bold;
+}
+
+.status-running {
+    color: #34d399;
+    text-style: bold;
+}
+
+.status-stopped {
+    color: #f87171;
+    text-style: bold;
+}
+
+.management-grid {
+    layout: grid;
+    grid-size: 2 4;
+    grid-gutter: 1;
+    padding: 1 2;
+    height: auto;
+}
+
+.management-action {
+    min-width: 30;
+    height: 3;
+}
+
+.log-viewer {
+    height: 1fr;
+    border: tall #2d2640;
+    margin: 1 2;
+    display: none;
+}
+
+.log-viewer.--visible {
+    display: block;
+}
+
+
+/* ── Preview Panel ───────────────────────────────────────────────────────── */
+
+.preview-panel {
+    background: #1a1225;
+    border: tall #2d2640;
+    padding: 1 2;
+    margin: 1 0;
+    height: auto;
+    max-height: 20;
+    overflow-y: auto;
+}
+
+.preview-panel:focus-within {
+    border: tall #c084fc;
+}
+
+
+/* ── Role Cards ──────────────────────────────────────────────────────────── */
+
+.role-category {
+    background: #1a1225;
+    border: tall #2d2640;
+    padding: 1 2;
+    margin: 0 0 1 0;
+}
+
+.role-category.--locked {
+    opacity: 0.6;
+}
+
+.role-category-title {
+    color: #ff8fab;
+    text-style: bold;
+}
+
+.role-list {
+    color: #c4b5fd;
+    padding: 0 0 0 2;
+}
+
+
+/* ── Confirmation Dialog ─────────────────────────────────────────────────── */
+
+.confirm-dialog {
+    align: center middle;
+    background: rgba(13, 11, 26, 0.85);
+}
+
+.confirm-box {
+    background: #231836;
+    border: tall #ff6b9d;
+    padding: 2 4;
+    width: 60;
+    height: auto;
+    max-height: 20;
+}
+
+.confirm-title {
+    text-align: center;
+    text-style: bold;
+    color: #f87171;
+    padding: 0 0 1 0;
+}
+
+.confirm-message {
+    text-align: center;
+    color: #e8e0f0;
+    padding: 0 0 2 0;
+}
+
+.confirm-buttons {
+    layout: horizontal;
+    align: center middle;
+    height: auto;
+}
+
+
+/* ── Decorative Motifs ───────────────────────────────────────────────────── */
+
+.sakura-divider {
+    text-align: center;
+    color: #ff8fab;
+    padding: 1 0;
+}
+
+.waifu-banner {
+    text-align: center;
+    color: #c084fc;
+    text-style: bold;
+    padding: 1 0;
+}
+
+.accent-gold {
+    color: #fbbf24;
+}
+
+.accent-pink {
+    color: #ff8fab;
+}
+
+.accent-lavender {
+    color: #c084fc;
+}
+
+.accent-mint {
+    color: #34d399;
+}
