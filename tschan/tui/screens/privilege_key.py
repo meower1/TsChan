@@ -33,29 +33,29 @@ class PrivilegeKeyScreen(Screen):
         with Center():
             with Vertical(id="key-container"):
                 yield Static(
-                    "[bold #f0f6fc]Deployment Complete[/]",
+                    "[bold #e2e8f0]Deployment Complete[/]",
                     classes="key-banner",
                 )
                 yield Static(
-                    "\n[bold #f0f6fc]Your Privilege Key[/]\n",
+                    "\n[bold #e2e8f0]Your Privilege Key[/]\n",
                     classes="key-label",
                 )
                 yield Static(
-                    f"[bold #d29922 on #161b22]  {self.privilege_key}  [/]",
+                    f"[bold #fbbf24 on #161625]  {self.privilege_key}  [/]",
                     id="privilege-key-display",
                     classes="key-value",
                 )
                 yield Static(
-                    "\n[bold #f0f6fc]Instructions[/]\n\n"
-                    "[#d8dee9]"
+                    "\n[bold #e2e8f0]Instructions[/]\n\n"
+                    "[#c9d1d9]"
                     "  1. Open your [bold]TeamSpeak 3[/] client\n"
-                    "  2. Connect to your server at [bold #d29922]localhost:9987[/]\n"
+                    "  2. Connect to your server at [bold #fbbf24]localhost:9987[/]\n"
                     "  3. Go to [bold]Permissions → Use Privilege Key[/]\n"
                     "  4. Paste the key shown above\n"
-                    "  5. You'll be granted the [bold #3fb950]Dev[/] role "
+                    "  5. You'll be granted the [bold #34d399]Dev[/] role "
                     "with full access\n"
                     "[/]\n"
-                    "[#8b949e]Save this key. It is needed for the first login.[/]",
+                    "[#6e7681]Save this key. It is needed for the first login.[/]",
                     classes="key-instructions",
                 )
                 yield Static("", classes="spacer")

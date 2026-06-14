@@ -1,33 +1,33 @@
-/* tschan — clean dark theme */
+/* tschan — sakura dark theme 🌸 */
 
 Screen {
-    background: #0d1117;
-    color: #d8dee9;
+    background: #0f0f1a;
+    color: #c9d1d9;
 }
 
 * {
-    scrollbar-background: #161b22;
-    scrollbar-color: #30363d;
-    scrollbar-color-hover: #58a6ff;
-    scrollbar-color-active: #58a6ff;
+    scrollbar-background: #161625;
+    scrollbar-color: #2a2a40;
+    scrollbar-color-hover: #c084fc;
+    scrollbar-color-active: #c084fc;
 }
 
 Header {
-    background: #161b22;
-    color: #f0f6fc;
+    background: #161625;
+    color: #e2e8f0;
     dock: top;
     text-style: bold;
 }
 
 HeaderIcon {
-    color: #58a6ff;
+    color: #f472b6;
 }
 
 /* ── Buttons ─────────────────────────────────────────────────────────────── */
 
 Button {
-    background: #21262d;
-    color: #f0f6fc;
+    background: #1e1e32;
+    color: #e2e8f0;
     border: none;
     min-width: 10;
     height: auto;
@@ -36,94 +36,94 @@ Button {
 }
 
 Button:hover {
-    background: #30363d;
-    color: #f0f6fc;
+    background: #2a2a40;
+    color: #f8fafc;
 }
 
 Button:focus {
-    background: #30363d;
+    background: #2a2a40;
     text-style: bold;
 }
 
 Button.-primary {
-    background: #1f6feb;
+    background: #7c3aed;
     color: #ffffff;
     text-style: bold;
 }
 
 Button.-primary:hover {
-    background: #388bfd;
+    background: #8b5cf6;
 }
 
 Button.-success {
-    background: #238636;
+    background: #059669;
     color: #ffffff;
     text-style: bold;
 }
 
 Button.-success:hover {
-    background: #2ea043;
+    background: #10b981;
 }
 
 Button.-error {
-    background: #da3633;
+    background: #be123c;
     color: #ffffff;
     text-style: bold;
 }
 
 Button.-error:hover {
-    background: #f85149;
+    background: #e11d48;
 }
 
 Button.-warning {
-    background: #9e6a03;
+    background: #b45309;
     color: #ffffff;
     text-style: bold;
 }
 
 Button.-warning:hover {
-    background: #bb8009;
+    background: #d97706;
 }
 
 /* ── Inputs ──────────────────────────────────────────────────────────────── */
 
 Input {
-    background: #0d1117;
-    color: #f0f6fc;
-    border: tall #30363d;
+    background: #0f0f1a;
+    color: #e2e8f0;
+    border: tall #2a2a40;
     padding: 0 1;
 }
 
 Input:focus {
-    border: tall #58a6ff;
-    background: #161b22;
+    border: tall #c084fc;
+    background: #161625;
 }
 
 Input.-valid {
-    border: tall #3fb950;
+    border: tall #34d399;
 }
 
 Input.-invalid {
-    border: tall #f85149;
+    border: tall #fb7185;
 }
 
 Input > .input--placeholder {
-    color: #6e7681;
+    color: #4a4a68;
 }
 
 Input > .input--cursor {
-    color: #58a6ff;
+    color: #c084fc;
     text-style: reverse;
 }
 
 TextArea {
-    background: #0d1117;
-    border: tall #30363d;
+    background: #0f0f1a;
+    border: tall #2a2a40;
 }
 
 TextArea:focus {
-    border: tall #58a6ff;
-    background: #161b22;
+    border: tall #c084fc;
+    background: #161625;
 }
 
 /* ── Radio / Checkbox ────────────────────────────────────────────────────── */
@@ -131,19 +131,20 @@ TextArea:focus {
 RadioButton,
 Checkbox {
     background: transparent;
-    color: #d8dee9;
+    color: #c9d1d9;
     padding: 0 1;
+    height: auto;
 }
 
 RadioButton:hover,
 Checkbox:hover {
-    color: #f0f6fc;
+    color: #e2e8f0;
 }
 
 RadioButton:focus,
 Checkbox:focus {
     text-style: bold;
-    color: #f0f6fc;
+    color: #f8fafc;
 }
 
 RadioSet {
@@ -164,48 +165,48 @@ ProgressBar {
 }
 
 ProgressBar > .bar--bar {
-    color: #58a6ff;
-    background: #30363d;
+    color: #c084fc;
+    background: #2a2a40;
 }
 
 ProgressBar > .bar--complete {
-    color: #3fb950;
+    color: #34d399;
 }
 
 DataTable {
-    background: #0d1117;
-    color: #d8dee9;
+    background: #0f0f1a;
+    color: #c9d1d9;
 }
 
 DataTable > .datatable--header {
-    background: #161b22;
-    color: #f0f6fc;
+    background: #161625;
+    color: #e2e8f0;
     text-style: bold;
 }
 
 DataTable > .datatable--cursor {
-    background: #1f6feb;
+    background: #7c3aed;
     color: #ffffff;
 }
 
 DataTable > .datatable--hover {
-    background: #21262d;
+    background: #1e1e32;
 }
 
 RichLog {
-    background: #0d1117;
-    color: #d8dee9;
-    border: tall #30363d;
+    background: #0f0f1a;
+    color: #c9d1d9;
+    border: tall #2a2a40;
     padding: 0 1;
-    scrollbar-background: #161b22;
+    scrollbar-background: #161625;
 }
 
 RichLog:focus {
-    border: tall #58a6ff;
+    border: tall #c084fc;
 }
 
 Static {
-    color: #d8dee9;
+    color: #c9d1d9;
 }
 
 /* ── Wizard: step indicator ──────────────────────────────────────────────── */
@@ -213,11 +214,11 @@ Static {
 #step-indicator {
     height: 1;
     dock: top;
-    background: #161b22;
+    background: #161625;
     padding: 0 2;
-    color: #8b949e;
+    color: #6e7681;
     text-align: center;
-    border-bottom: solid #30363d;
+    border-bottom: solid #2a2a40;
 }
 
 /* ── Wizard: content area ────────────────────────────────────────────────── */
@@ -231,8 +232,8 @@ Static {
 .wizard-nav {
     dock: bottom;
     height: auto;
-    background: #161b22;
-    border-top: solid #30363d;
+    background: #161625;
+    border-top: solid #2a2a40;
     padding: 0 2;
     layout: horizontal;
     align: center middle;
@@ -241,53 +242,57 @@ Static {
 .step-title {
     text-align: center;
     text-style: bold;
-    color: #f0f6fc;
+    color: #e2e8f0;
     padding: 1 0 0 0;
     width: 100%;
 }
 
 .step-subtitle {
     text-align: center;
-    color: #8b949e;
+    color: #6e7681;
     padding: 0 0 1 0;
     width: 100%;
 }
 
-/* ── Form sections ───────────────────────────────────────────────────────── */
+/* ── Inline layouts ──────────────────────────────────────────────────────── */
 
-.form-section {
-    background: #161b22;
-    border: round #30363d;
-    padding: 1 2;
-    margin: 0 0 1 0;
+.inline-radio {
     height: auto;
+    layout: horizontal;
 }
 
+.inline-checkboxes {
+    height: auto;
+    layout: horizontal;
+}
+
+/* ── Form fields ─────────────────────────────────────────────────────────── */
+
 .field-label {
-    color: #f0f6fc;
+    color: #f472b6;
     text-style: bold;
-    padding: 0 0 0 0;
+    padding: 1 0 0 0;
 }
 
 .helper-text {
-    color: #8b949e;
+    color: #6e7681;
     padding: 0 0;
 }
 
 .error-text {
-    color: #f85149;
+    color: #fb7185;
     text-style: bold;
     padding: 0 0;
 }
 
 .success-text {
-    color: #3fb950;
+    color: #34d399;
     text-style: bold;
     padding: 0 0;
 }
 
 .muted-text {
-    color: #8b949e;
+    color: #6e7681;
 }
 
 /* ── Review screen ───────────────────────────────────────────────────────── */
@@ -297,8 +302,8 @@ Static {
 }
 
 .review-row {
-    background: #161b22;
-    border: round #30363d;
+    background: #161625;
+    border: round #2a2a40;
     padding: 0 2;
     margin: 0 0 1 0;
     height: auto;
@@ -306,13 +311,13 @@ Static {
 }
 
 .review-label {
-    color: #8b949e;
+    color: #6e7681;
     text-style: bold;
     width: 22;
 }
 
 .review-value {
-    color: #f0f6fc;
+    color: #e2e8f0;
     width: 1fr;
 }
 
@@ -328,56 +333,56 @@ Static {
 }
 
 .deploy-status {
-    color: #f0f6fc;
-    background: #161b22;
-    border: round #30363d;
+    color: #e2e8f0;
+    background: #161625;
+    border: round #2a2a40;
     padding: 0 2;
     margin: 1 0;
 }
 
 .deploy-step {
     padding: 0 2;
-    color: #8b949e;
+    color: #6e7681;
     height: auto;
 }
 
 .deploy-step.--done {
-    color: #3fb950;
+    color: #34d399;
 }
 
 .deploy-step.--active {
-    color: #f0f6fc;
+    color: #e2e8f0;
     text-style: bold;
 }
 
 .deploy-step.--error {
-    color: #f85149;
+    color: #fb7185;
     text-style: bold;
 }
 
 .deploy-log-path {
-    color: #8b949e;
+    color: #6e7681;
     padding: 1 2 0 2;
 }
 
 .deploy-log {
     height: 16;
     min-height: 8;
-    background: #0d1117;
-    border: tall #30363d;
+    background: #0f0f1a;
+    border: tall #2a2a40;
     margin: 1 0;
     padding: 0 1;
 }
 
 .deploy-log:focus {
-    border: tall #58a6ff;
+    border: tall #c084fc;
 }
 
 /* ── Privilege key screen ────────────────────────────────────────────────── */
 
 .key-banner {
     text-align: center;
-    color: #f0f6fc;
+    color: #e2e8f0;
     text-style: bold;
     padding: 1 0;
 }
@@ -385,46 +390,46 @@ Static {
 .key-display,
 .key-value {
     text-align: center;
-    background: #161b22;
-    border: round #30363d;
+    background: #161625;
+    border: round #2a2a40;
     padding: 1 4;
     margin: 1 8;
-    color: #d29922;
+    color: #fbbf24;
     text-style: bold;
 }
 
 .key-label {
     text-align: center;
-    color: #f0f6fc;
+    color: #e2e8f0;
 }
 
 .key-instructions {
     padding: 1 4;
-    color: #d8dee9;
+    color: #c9d1d9;
 }
 
 /* ── Management screen ───────────────────────────────────────────────────── */
 
 .status-bar {
-    background: #161b22;
-    border: round #30363d;
+    background: #161625;
+    border: round #2a2a40;
     padding: 0 2;
     height: auto;
     margin: 0 0 1 0;
 }
 
 .status-label {
-    color: #f0f6fc;
+    color: #e2e8f0;
     text-style: bold;
 }
 
 .status-running {
-    color: #3fb950;
+    color: #34d399;
     text-style: bold;
 }
 
 .status-stopped {
-    color: #f85149;
+    color: #fb7185;
     text-style: bold;
 }
 
@@ -445,7 +450,7 @@ Static {
 
 .log-viewer {
     height: 1fr;
-    border: tall #30363d;
+    border: tall #2a2a40;
     margin: 1 2;
     display: none;
 }
@@ -457,8 +462,8 @@ Static {
 /* ── Template preview ────────────────────────────────────────────────────── */
 
 .preview-panel {
-    background: #161b22;
-    border: round #30363d;
+    background: #161625;
+    border: round #2a2a40;
     padding: 1 2;
     margin: 1 0;
     height: auto;
@@ -467,42 +472,19 @@ Static {
 }
 
 .preview-panel:focus-within {
-    border: round #58a6ff;
-}
-
-/* ── Role categories ─────────────────────────────────────────────────────── */
-
-.role-category {
-    background: #0d1117;
-    border: round #30363d;
-    padding: 0 2;
-    margin: 0 0 1 0;
-}
-
-.role-category.--locked {
-    opacity: 0.8;
-}
-
-.role-category-title {
-    color: #f0f6fc;
-    text-style: bold;
-}
-
-.role-list {
-    color: #8b949e;
-    padding: 0 0 0 2;
+    border: round #c084fc;
 }
 
 /* ── Confirm dialog ──────────────────────────────────────────────────────── */
 
 .confirm-dialog {
     align: center middle;
-    background: rgba(13, 17, 23, 0.85);
+    background: rgba(15, 15, 26, 0.85);
 }
 
 .confirm-box {
-    background: #161b22;
-    border: round #30363d;
+    background: #161625;
+    border: round #2a2a40;
     padding: 2 4;
     width: 60;
     height: auto;
@@ -512,13 +494,13 @@ Static {
 .confirm-title {
     text-align: center;
     text-style: bold;
-    color: #f85149;
+    color: #fb7185;
     padding: 0 0 1 0;
 }
 
 .confirm-message {
     text-align: center;
-    color: #d8dee9;
+    color: #c9d1d9;
     padding: 0 0 2 0;
 }
 

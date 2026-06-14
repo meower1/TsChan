@@ -27,15 +27,15 @@ class ConfirmUninstallScreen(Screen):
         with Vertical(classes="confirm-dialog"):
             with Vertical(classes="confirm-box"):
                 yield Static(
-                    "[bold #f85149]Uninstall Server[/]",
+                    "[bold #fb7185]Uninstall Server[/]",
                     classes="confirm-title",
                 )
                 yield Static(
-                    "[#d8dee9]Are you sure? This will:[/]\n\n"
-                    "  [#f85149]•[/] Stop all Docker containers\n"
-                    "  [#f85149]•[/] Delete ALL server data\n"
-                    "  [#f85149]•[/] Remove configuration files\n\n"
-                    "[bold #f85149]This action cannot be undone.[/]",
+                    "[#c9d1d9]Are you sure? This will:[/]\n\n"
+                    "  [#fb7185]•[/] Stop all Docker containers\n"
+                    "  [#fb7185]•[/] Delete ALL server data\n"
+                    "  [#fb7185]•[/] Remove configuration files\n\n"
+                    "[bold #fb7185]This action cannot be undone.[/]",
                     classes="confirm-message",
                 )
                 with Horizontal(classes="confirm-buttons"):
@@ -80,7 +80,7 @@ class ManagementScreen(Screen):
         yield Header(show_clock=False)
 
         yield Static(
-            "[bold #f0f6fc]tschan Management[/]",
+            "[bold #e2e8f0]tschan Management[/]",
             classes="step-title",
         )
 
@@ -173,8 +173,8 @@ class ManagementScreen(Screen):
         """Display the server name in the status bar."""
         name_widget = self.query_one("#status-server-name", Static)
         name_widget.update(
-            f"[bold #f0f6fc]Server:[/] [#d8dee9]{self.config.server_name}[/]\n"
-            f"[bold #f0f6fc]Project:[/] [#8b949e]{self.project_dir}[/]"
+            f"[bold #e2e8f0]Server:[/] [#c9d1d9]{self.config.server_name}[/]\n"
+            f"[bold #e2e8f0]Project:[/] [#6e7681]{self.project_dir}[/]"
         )
 
     @work(thread=True, exclusive=True, group="status")
@@ -188,14 +188,14 @@ class ManagementScreen(Screen):
             containers = docker.get_containers()
 
             if is_running:
-                status_text = "[bold #3fb950]● Running[/]"
+                status_text = "[bold #34d399]● Running[/]"
                 container_info = "  ".join(
-                    f"[#8b949e]{c.name}:[/] [#3fb950]{c.status}[/]"
+                    f"[#6e7681]{c.name}:[/] [#34d399]{c.status}[/]"
                     for c in containers
                 )
             else:
-                status_text = "[bold #f85149]● Stopped[/]"
-                container_info = "[#8b949e]No containers running[/]"
+                status_text = "[bold #fb7185]● Stopped[/]"
+                container_info = "[#6e7681]No containers running[/]"
 
             self.app.call_from_thread(
                 self._set_status, status_text, container_info
@@ -217,22 +217,22 @@ class ManagementScreen(Screen):
                     client.disconnect()
                     self.app.call_from_thread(
                         self._set_clients,
-                        f"[#8b949e]Clients:[/] [#f0f6fc]{info.clients_online}"
+                        f"[#6e7681]Clients:[/] [#e2e8f0]{info.clients_online}"
                         f"/{info.max_clients}[/]  ·  "
-                        f"[#8b949e]Uptime:[/] [#f0f6fc]"
+                        f"[#6e7681]Uptime:[/] [#e2e8f0]"
                         f"{info.uptime_seconds // 3600}h "
                         f"{(info.uptime_seconds % 3600) // 60}m[/]",
                     )
                 except Exception:
                     self.app.call_from_thread(
                         self._set_clients,
-                        "[#8b949e]Could not query server info[/]",
+                        "[#6e7681]Could not query server info[/]",
                     )
         except Exception as exc:
             self.app.call_from_thread(
                 self._set_status,
-                "[bold #f85149]● Error[/]",
-                f"[#f85149]{exc}[/]",
+                "[bold #fb7185]● Error[/]",
+                f"[#fb7185]{exc}[/]",
             )
 
     def _set_status(self, status_text: str, container_info: str) -> None:

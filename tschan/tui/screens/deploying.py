@@ -50,7 +50,7 @@ class DeployingScreen(Screen):
         yield Header(show_clock=False)
         yield Static("Deploying Your Server", classes="step-title")
         yield Static(
-            "[#8b949e]Keep this window open until deployment finishes.[/]",
+            "[#6e7681]Keep this window open until deployment finishes.[/]",
             classes="step-subtitle",
         )
 
@@ -60,7 +60,7 @@ class DeployingScreen(Screen):
                 id="deploy-progress",
             )
             yield Static(
-                "[#8b949e]Preparing deployment...[/]",
+                "[#6e7681]Preparing deployment...[/]",
                 id="deploy-status",
                 classes="deploy-status",
             )
@@ -145,16 +145,16 @@ class DeployingScreen(Screen):
         step_widget = self.query_one(f"#deploy-step-{index}", Static)
         text = DEPLOY_STEPS[index]
         if state == "done":
-            step_widget.update(f"  [#3fb950]✓[/]  [#3fb950]{text}[/]")
+            step_widget.update(f"  [#34d399]✓[/]  [#34d399]{text}[/]")
             step_widget.add_class("--done")
             step_widget.remove_class("--active", "--error")
         elif state == "active":
             self._active_step_index = index
-            step_widget.update(f"  [bold #f0f6fc]●[/]  [bold #f0f6fc]{text}[/]")
+            step_widget.update(f"  [bold #e2e8f0]●[/]  [bold #e2e8f0]{text}[/]")
             step_widget.add_class("--active")
             step_widget.remove_class("--done", "--error")
         elif state == "error":
-            step_widget.update(f"  [#f85149]✗[/]  [#f85149]{text}[/]")
+            step_widget.update(f"  [#fb7185]✗[/]  [#fb7185]{text}[/]")
             step_widget.add_class("--error")
             step_widget.remove_class("--done", "--active")
 
@@ -162,7 +162,7 @@ class DeployingScreen(Screen):
         """Show the active deployment step."""
         self._set_step_state(index, "active")
         self.query_one("#deploy-status", Static).update(
-            f"[#f0f6fc]{DEPLOY_STEPS[index]}[/]"
+            f"[#e2e8f0]{DEPLOY_STEPS[index]}[/]"
         )
         self._append_log_line(f"Step {index + 1}/{len(DEPLOY_STEPS)} started: {DEPLOY_STEPS[index]}")
 
@@ -172,7 +172,7 @@ class DeployingScreen(Screen):
         progress = self.query_one("#deploy-progress", ProgressBar)
         progress.update(progress=index + 1)
         self.query_one("#deploy-status", Static).update(
-            f"[#3fb950]Completed {index + 1} of {len(DEPLOY_STEPS)} steps[/]"
+            f"[#34d399]Completed {index + 1} of {len(DEPLOY_STEPS)} steps[/]"
         )
         self._append_log_line(f"Step {index + 1}/{len(DEPLOY_STEPS)} completed: {DEPLOY_STEPS[index]}")
 
@@ -317,14 +317,14 @@ class DeployingScreen(Screen):
         if self._active_step_index is not None:
             self._set_step_state(self._active_step_index, "error")
         self.query_one("#deploy-status", Static).update(
-            "[#f85149]Deployment failed[/]"
+            "[#fb7185]Deployment failed[/]"
         )
         self._append_log_line(f"Deployment failed. See {self._log_path}")
         error_widget = self.query_one("#deploy-error", Static)
         error_widget.update(
-            f"[bold #f85149]Deployment failed:[/]\n"
-            f"[#f85149]{error_msg}[/]\n\n"
-            f"[#8b949e]Press Escape to go back and try again.[/]"
+            f"[bold #fb7185]Deployment failed:[/]\n"
+            f"[#fb7185]{error_msg}[/]\n\n"
+            f"[#6e7681]Press Escape to go back and try again.[/]"
         )
 
     def action_go_back(self) -> None:

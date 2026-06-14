@@ -7,7 +7,7 @@ from pathlib import Path
 from rich.markup import escape
 from textual import on
 from textual.app import ComposeResult
-from textual.containers import Horizontal, Vertical, VerticalScroll
+from textual.containers import Horizontal, VerticalScroll
 from textual.screen import Screen
 from textual.widgets import (
     Button,
@@ -66,70 +66,53 @@ class SetupWizardScreen(Screen):
         yield Static(id="step-indicator")
 
         with VerticalScroll(id="step-0", classes="wizard-content"):
-            yield Static("Server Setup", classes="step-title")
-            yield Static(
-                "Configure the server options before choosing a template.",
-                classes="step-subtitle",
+            yield Static("Server name", classes="field-label")
+            yield Input(
+                placeholder="e.g. meower",
+                id="server-name-input",
             )
+            yield Static("", id="server-name-preview", classes="helper-text")
 
-            with Vertical(classes="form-section"):
-                yield Static("Server name", classes="field-label")
-                yield Input(
-                    placeholder="Server name, for example: meower",
-                    id="server-name-input",
-                )
-                yield Static(
-                    "Enter a server name to preview the final title.",
-                    id="server-name-preview",
-                    classes="helper-text",
-                )
-
-            with Vertical(classes="form-section"):
-                yield Static("Melodify music bot", classes="field-label")
+            yield Static("Melodify music bot", classes="field-label")
+            with Horizontal(classes="inline-radio"):
                 with RadioSet(id="music-bot-radio-set"):
                     yield RadioButton("Disabled", value=True, id="music-disable")
                     yield RadioButton("Enabled", id="music-enable")
-                yield Input(
-                    placeholder="Melodify API key",
-                    id="api-key-input",
-                    password=True,
-                )
-                yield Static("", id="api-key-helper", classes="helper-text")
+            yield Input(
+                placeholder="Melodify API key",
+                id="api-key-input",
+                password=True,
+            )
+            yield Static("", id="api-key-helper", classes="helper-text")
 
-            with Vertical(classes="form-section"):
-                yield Static("Cosmetic roles", classes="field-label")
-                with Vertical(classes="role-category --locked"):
-                    yield Static("Staff (always included)", classes="role-category-title")
-                    yield Static(
-                        "  ".join(ROLE_CATEGORIES["staff"]["roles"]),
-                        classes="role-list",
-                    )
+            yield Static("Cosmetic roles", classes="field-label")
+            yield Static(
+                "[#6e7681]Staff always included[/]",
+                classes="helper-text",
+            )
+            with Horizontal(classes="inline-checkboxes"):
                 yield Checkbox(
                     _OPTIONAL_ROLE_LABELS[0],
                     id="role-games",
                     value=False,
                 )
-                yield Static("", id="roles-games-preview", classes="role-list")
                 yield Checkbox(
                     _OPTIONAL_ROLE_LABELS[1],
                     id="role-cozy",
                     value=False,
                 )
-                yield Static("", id="roles-cozy-preview", classes="role-list")
                 yield Checkbox(
                     _OPTIONAL_ROLE_LABELS[2],
                     id="role-nerd-corner",
                     value=False,
                 )
-                yield Static("", id="roles-nerd-corner-preview", classes="role-list")
 
-            with Vertical(classes="form-section"):
-                yield Static("Welcome message", classes="field-label")
-                yield Input(
-                    value="Welcome to the server!",
-                    placeholder="Message shown when users connect",
-                    id="welcome-message-input",
-                )
+            yield Static("Welcome message", classes="field-label")
+            yield Input(
+                value="Welcome to the server!",
+                placeholder="Message shown when users connect",
+                id="welcome-message-input",
+            )
 
         with VerticalScroll(id="step-1", classes="wizard-content"):
             yield Static("Channel Template", classes="step-title")
@@ -155,7 +138,6 @@ class SetupWizardScreen(Screen):
         self._sync_step_visibility()
         self._update_step_indicator()
         self._update_template_preview()
-        self._update_role_previews()
         self._update_api_key_visibility()
         self.query_one("#server-name-input", Input).focus()
 
@@ -176,9 +158,9 @@ class SetupWizardScreen(Screen):
             if i < self.current_step:
                 parts.append(f"[#34d399]✓ {name}[/]")
             elif i == self.current_step:
-                parts.append(f"[bold #d8dee9]● {name}[/]")
+                parts.append(f"[bold #f472b6]● {name}[/]")
             else:
-                parts.append(f"[#8b949e]○ {name}[/]")
+                parts.append(f"[#6e7681]○ {name}[/]")
         self.query_one("#step-indicator", Static).update("  ─  ".join(parts))
 
     def _go_to_step(self, step: int) -> None:
@@ -272,11 +254,10 @@ class SetupWizardScreen(Screen):
                 "'s server",
             )
             preview.update(
-                f"[#8b949e]Final server title:[/] "
-                f"[bold #f0f6fc]{escape(name + suffix)}[/]"
+                f"[#6e7681]→ {escape(name + suffix)}[/]"
             )
         else:
-            preview.update("[#8b949e]Enter a server name to preview the final title.[/]")
+            preview.update("")
 
     @on(Input.Submitted, "#server-name-input")
     def _on_name_submitted(self, event: Input.Submitted) -> None:
@@ -310,12 +291,7 @@ class SetupWizardScreen(Screen):
         self._update_template_preview()
         self._update_server_name_preview()
 
-    @on(Checkbox.Changed, "#role-games")
-    @on(Checkbox.Changed, "#role-cozy")
-    @on(Checkbox.Changed, "#role-nerd-corner")
-    def _on_role_checkbox_changed(self, event: Checkbox.Changed) -> None:
-        """Update role previews when checkboxes toggle."""
-        self._update_role_previews()
+
 
     @on(Button.Pressed, "#btn-back")
     def _on_back(self) -> None:
@@ -372,7 +348,7 @@ class SetupWizardScreen(Screen):
         api_input.display = bot_on
         helper.display = bot_on
         if bot_on:
-            helper.update("[#8b949e]Required when Melodify is enabled.[/]")
+            helper.update("[#6e7681]API key required[/]")
         else:
             helper.update("")
 
@@ -386,24 +362,8 @@ class SetupWizardScreen(Screen):
         self.config.template_name = key
         preview_text = get_template_preview(key)
         self.query_one("#template-preview", Static).update(
-            f"[#d8dee9]{escape(preview_text)}[/]"
+            f"[#c9d1d9]{escape(preview_text)}[/]"
         )
-
-    def _update_role_previews(self) -> None:
-        """Show roles under each selected category."""
-        mapping = {
-            "#role-games": ("games", "#roles-games-preview"),
-            "#role-cozy": ("cozy", "#roles-cozy-preview"),
-            "#role-nerd-corner": ("nerd_corner", "#roles-nerd-corner-preview"),
-        }
-        for cb_id, (cat_key, preview_id) in mapping.items():
-            checked = self.query_one(cb_id, Checkbox).value
-            preview = self.query_one(preview_id, Static)
-            if checked:
-                roles = ROLE_CATEGORIES[cat_key]["roles"]
-                preview.update("[#8b949e]  " + "  ·  ".join(escape(r) for r in roles) + "[/]")
-            else:
-                preview.update("")
 
     def jump_to_step(self, step: int) -> None:
         """Public method for the review screen to jump back to a page."""

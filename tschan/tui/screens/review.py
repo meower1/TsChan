@@ -63,7 +63,7 @@ class ReviewScreen(Screen):
             with Horizontal(classes="review-row"):
                 yield Static("Project folder", classes="review-label")
                 yield Static(
-                    f"[#f0f6fc]{escape(str(self.project_dir))}[/]",
+                    f"[#e2e8f0]{escape(str(self.project_dir))}[/]",
                     id="review-project-dir",
                     classes="review-value",
                 )
@@ -123,25 +123,25 @@ class ReviewScreen(Screen):
     def _server_name_value(self) -> str:
         name = self.config.server_name.strip()
         if not name:
-            return "[#8b949e]Not set[/]"
+            return "[#6e7681]Not set[/]"
         suffix = TEMPLATE_SERVER_NAME_SUFFIX.get(self.config.template_name, "'s server")
-        return f"[#f0f6fc]{escape(name + suffix)}[/]"
+        return f"[#e2e8f0]{escape(name + suffix)}[/]"
 
     def _music_value(self) -> str:
         if not self.config.music_bot_enabled:
-            return "[#8b949e]Disabled[/]"
+            return "[#6e7681]Disabled[/]"
         key = self.config.melodify_api_key.strip()
         if not key:
-            return "[#f85149]Enabled, API key missing[/]"
+            return "[#fb7185]Enabled, API key missing[/]"
         if len(key) <= 8:
             masked_key = "•" * len(key)
         else:
             masked_key = f"{key[:4]}••••{key[-4:]}"
-        return f"[#3fb950]Enabled[/] [#8b949e]· Key {escape(masked_key)}[/]"
+        return f"[#34d399]Enabled[/] [#6e7681]· Key {escape(masked_key)}[/]"
 
     def _template_value(self) -> str:
         name = _TEMPLATE_NAMES.get(self.config.template_name, self.config.template_name)
-        return f"[#f0f6fc]{escape(name)}[/]"
+        return f"[#e2e8f0]{escape(name)}[/]"
 
     def _roles_value(self) -> str:
         role_names = [
@@ -151,13 +151,13 @@ class ReviewScreen(Screen):
         ]
         if not role_names:
             role_names = ["Staff"]
-        return f"[#f0f6fc]{escape(', '.join(role_names))}[/]"
+        return f"[#e2e8f0]{escape(', '.join(role_names))}[/]"
 
     def _welcome_value(self) -> str:
         message = self.config.welcome_message.strip()
         if not message:
-            return "[#8b949e]No welcome message[/]"
-        return f"[#f0f6fc]{escape(message)}[/]"
+            return "[#6e7681]No welcome message[/]"
+        return f"[#e2e8f0]{escape(message)}[/]"
 
     @on(Button.Pressed, "#edit-step-0")
     @on(Button.Pressed, "#edit-step-0-music")
