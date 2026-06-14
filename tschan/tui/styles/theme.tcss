@@ -95,12 +95,12 @@ Input {
 }
 
 Input:focus {
-    border: tall #c084fc;
+    border: tall #f472b6;
     background: #161625;
 }
 
 Input.-valid {
-    border: tall #34d399;
+    border: tall #f472b6;
 }
 
 Input.-invalid {
@@ -112,7 +112,7 @@ Input > .input--placeholder {
 }
 
 Input > .input--cursor {
-    color: #c084fc;
+    color: #f472b6;
     text-style: reverse;
 }
 
@@ -122,7 +122,7 @@ TextArea {
 }
 
 TextArea:focus {
-    border: tall #c084fc;
+    border: tall #f472b6;
     background: #161625;
 }
 
@@ -209,24 +209,18 @@ Static {
     color: #c9d1d9;
 }
 
-/* ── Wizard: step indicator ──────────────────────────────────────────────── */
-
-#step-indicator {
-    height: 1;
-    dock: top;
-    background: #161625;
-    padding: 0 2;
-    color: #6e7681;
-    text-align: center;
-    border-bottom: solid #2a2a40;
-}
-
 /* ── Wizard: content area ────────────────────────────────────────────────── */
 
 .wizard-content {
     padding: 1 4;
     height: 1fr;
-    overflow-y: auto;
+    layout: horizontal;
+}
+
+.wizard-column {
+    width: 1fr;
+    height: 100%;
+    padding: 0 2;
 }
 
 .wizard-nav {
@@ -236,7 +230,7 @@ Static {
     border-top: solid #2a2a40;
     padding: 0 2;
     layout: horizontal;
-    align: center middle;
+    align: right middle;
 }
 
 .step-title {

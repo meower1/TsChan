@@ -185,6 +185,5 @@ class ReviewScreen(Screen):
         self.app.pop_screen()
 
     def _jump_to_wizard(self, step: int) -> None:
-        """Pop back to wizard and jump to the given step."""
-        self.wizard.jump_to_step(step)
+        """Pop back to wizard."""
         self.app.pop_screen()

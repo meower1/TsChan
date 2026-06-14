@@ -1,4 +1,4 @@
-"""Two-page setup wizard screen for tschan."""
+"""Single-page setup wizard screen for tschan."""
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ from pathlib import Path
 from rich.markup import escape
 from textual import on
 from textual.app import ComposeResult
-from textual.containers import Horizontal, VerticalScroll
+from textual.containers import Horizontal, Vertical
 from textual.screen import Screen
 from textual.widgets import (
     Button,
@@ -30,13 +30,6 @@ from tschan.templates.channels import get_template_preview
 from tschan.templates.roles import ROLE_CATEGORIES
 
 
-TOTAL_STEPS = 2
-
-STEP_NAMES: list[str] = [
-    "Server Options",
-    "Channel Template",
-]
-
 _TEMPLATE_KEYS = [TEMPLATE_MEOWERS_HANGOUT, TEMPLATE_NEON_ARENA, TEMPLATE_COZY_DEN]
 _TEMPLATE_LABELS = [
     "Meower's Hangout",
@@ -49,7 +42,7 @@ _OPTIONAL_ROLE_LABELS = ["Games", "Cozy", "Nerd Corner"]
 
 
 class SetupWizardScreen(Screen):
-    """Setup wizard with all options on one page except channel template."""
+    """Setup wizard with all options on one page."""
 
     BINDINGS = [
         ("escape", "go_back", "Back"),
@@ -59,136 +52,89 @@ class SetupWizardScreen(Screen):
         super().__init__()
         self.project_dir = Path(project_dir).expanduser().resolve()
         self.config = SetupConfig()
-        self.current_step: int = 0
 
     def compose(self) -> ComposeResult:
         yield Header(show_clock=False)
-        yield Static(id="step-indicator")
 
-        with VerticalScroll(id="step-0", classes="wizard-content"):
-            yield Static("Server name", classes="field-label")
-            yield Input(
-                placeholder="e.g. meower",
-                id="server-name-input",
-            )
-            yield Static("", id="server-name-preview", classes="helper-text")
-
-            yield Static("Melodify music bot", classes="field-label")
-            with Horizontal(classes="inline-radio"):
-                with RadioSet(id="music-bot-radio-set"):
-                    yield RadioButton("Disabled", value=True, id="music-disable")
-                    yield RadioButton("Enabled", id="music-enable")
-            yield Input(
-                placeholder="Melodify API key",
-                id="api-key-input",
-                password=True,
-            )
-            yield Static("", id="api-key-helper", classes="helper-text")
-
-            yield Static("Cosmetic roles", classes="field-label")
-            yield Static(
-                "[#6e7681]Staff always included[/]",
-                classes="helper-text",
-            )
-            with Horizontal(classes="inline-checkboxes"):
-                yield Checkbox(
-                    _OPTIONAL_ROLE_LABELS[0],
-                    id="role-games",
-                    value=False,
+        with Vertical(classes="wizard-content"):
+            with Vertical(classes="wizard-column"):
+                yield Static("Server name", classes="field-label")
+                yield Input(
+                    placeholder="e.g. meower",
+                    id="server-name-input",
                 )
-                yield Checkbox(
-                    _OPTIONAL_ROLE_LABELS[1],
-                    id="role-cozy",
-                    value=False,
+                yield Static("", id="server-name-preview", classes="helper-text")
+
+                yield Static("Melodify music bot", classes="field-label")
+                with Horizontal(classes="inline-radio"):
+                    with RadioSet(id="music-bot-radio-set"):
+                        yield RadioButton("Disabled", value=True, id="music-disable")
+                        yield RadioButton("Enabled", id="music-enable")
+                yield Input(
+                    placeholder="Melodify API key",
+                    id="api-key-input",
+                    password=True,
                 )
-                yield Checkbox(
-                    _OPTIONAL_ROLE_LABELS[2],
-                    id="role-nerd-corner",
-                    value=False,
+                yield Static("", id="api-key-helper", classes="helper-text")
+
+                yield Static("Cosmetic roles", classes="field-label")
+                yield Static(
+                    "[#6e7681]Staff always included[/]",
+                    classes="helper-text",
+                )
+                with Horizontal(classes="inline-checkboxes"):
+                    yield Checkbox(
+                        _OPTIONAL_ROLE_LABELS[0],
+                        id="role-games",
+                        value=False,
+                    )
+                    yield Checkbox(
+                        _OPTIONAL_ROLE_LABELS[1],
+                        id="role-cozy",
+                        value=False,
+                    )
+                    yield Checkbox(
+                        _OPTIONAL_ROLE_LABELS[2],
+                        id="role-nerd-corner",
+                        value=False,
+                    )
+
+                yield Static("Welcome message", classes="field-label")
+                yield Input(
+                    value="Welcome to the server!",
+                    placeholder="Message shown when users connect",
+                    id="welcome-message-input",
                 )
 
-            yield Static("Welcome message", classes="field-label")
-            yield Input(
-                value="Welcome to the server!",
-                placeholder="Message shown when users connect",
-                id="welcome-message-input",
-            )
-
-        with VerticalScroll(id="step-1", classes="wizard-content"):
-            yield Static("Channel Template", classes="step-title")
-            yield Static(
-                "Choose the channel layout to create on the server.",
-                classes="step-subtitle",
-            )
-            with RadioSet(id="template-radio-set"):
-                yield RadioButton(_TEMPLATE_LABELS[0], value=True, id="tmpl-0")
-                yield RadioButton(_TEMPLATE_LABELS[1], id="tmpl-1")
-                yield RadioButton(_TEMPLATE_LABELS[2], id="tmpl-2")
-            yield Static("", id="template-preview", classes="preview-panel")
+            with Vertical(classes="wizard-column"):
+                yield Static("Channel Template", classes="field-label")
+                yield Static(
+                    "[#6e7681]Choose the channel layout to create on the server.[/]",
+                    classes="helper-text",
+                )
+                with RadioSet(id="template-radio-set"):
+                    yield RadioButton(_TEMPLATE_LABELS[0], value=True, id="tmpl-0")
+                    yield RadioButton(_TEMPLATE_LABELS[1], id="tmpl-1")
+                    yield RadioButton(_TEMPLATE_LABELS[2], id="tmpl-2")
+                yield Static("", id="template-preview", classes="preview-panel")
 
         with Horizontal(classes="wizard-nav"):
-            yield Button("Back", id="btn-back", variant="default")
-            yield Button("Next", id="btn-next", variant="primary")
-            yield Button("Review", id="btn-review", variant="success")
-
+            yield Button("Review", id="btn-review", variant="primary")
 
 
     def on_mount(self) -> None:
         """Initialize the wizard."""
-        self._sync_step_visibility()
-        self._update_step_indicator()
         self._update_template_preview()
         self._update_api_key_visibility()
         self.query_one("#server-name-input", Input).focus()
-
-    def _sync_step_visibility(self) -> None:
-        """Show only the current page."""
-        for i in range(TOTAL_STEPS):
-            container = self.query_one(f"#step-{i}")
-            container.display = i == self.current_step
-
-        self.query_one("#btn-back", Button).display = self.current_step > 0
-        self.query_one("#btn-next", Button).display = self.current_step < TOTAL_STEPS - 1
-        self.query_one("#btn-review", Button).display = self.current_step == TOTAL_STEPS - 1
-
-    def _update_step_indicator(self) -> None:
-        """Build the step indicator text."""
-        parts: list[str] = []
-        for i, name in enumerate(STEP_NAMES):
-            if i < self.current_step:
-                parts.append(f"[#34d399]✓ {name}[/]")
-            elif i == self.current_step:
-                parts.append(f"[bold #f472b6]● {name}[/]")
-            else:
-                parts.append(f"[#6e7681]○ {name}[/]")
-        self.query_one("#step-indicator", Static).update("  ─  ".join(parts))
-
-    def _go_to_step(self, step: int) -> None:
-        """Navigate to the specified step, clamped to valid range."""
-        step = max(0, min(step, TOTAL_STEPS - 1))
-        if step == self.current_step:
-            return
-        self._save_current_step_data()
-        self.current_step = step
-        self._sync_step_visibility()
-        self._update_step_indicator()
-        self._focus_current_step()
-
-    def _focus_current_step(self) -> None:
-        """Focus the primary widget on the current page."""
-        widget_id = "#server-name-input" if self.current_step == 0 else "#template-radio-set"
-        try:
-            self.query_one(widget_id).focus()
-        except Exception:
-            pass
 
     def _music_enabled_from_ui(self) -> bool:
         """Return True when the Melodify radio set is enabled."""
         radio_set = self.query_one("#music-bot-radio-set", RadioSet)
         return radio_set.pressed_index == 1
 
-    def _save_options_data(self) -> None:
-        """Persist the consolidated options page into config."""
+    def _save_all_data(self) -> None:
+        """Persist all wizard options into config."""
         self.config.server_name = self.query_one("#server-name-input", Input).value.strip()
         self.config.music_bot_enabled = self._music_enabled_from_ui()
         self.config.melodify_api_key = self.query_one("#api-key-input", Input).value.strip()
@@ -206,36 +152,10 @@ class SetupWizardScreen(Screen):
                 groups.append(role_key)
         self.config.role_groups = groups
 
-    def _save_template_data(self) -> None:
-        """Persist the template page into config."""
         radio_set = self.query_one("#template-radio-set", RadioSet)
         idx = radio_set.pressed_index
         if 0 <= idx < len(_TEMPLATE_KEYS):
             self.config.template_name = _TEMPLATE_KEYS[idx]
-
-    def _save_current_step_data(self) -> None:
-        """Persist widget state for the current page."""
-        if self.current_step == 0:
-            self._save_options_data()
-        elif self.current_step == 1:
-            self._save_template_data()
-
-    def _save_all_data(self) -> None:
-        """Persist all wizard pages."""
-        self._save_options_data()
-        self._save_template_data()
-
-    def _validate_current_step(self) -> str | None:
-        """Validate the current page. Returns error text or None."""
-        if self.current_step == 0:
-            name = self.query_one("#server-name-input", Input).value.strip()
-            if not name:
-                return "Server name is required"
-            if self._music_enabled_from_ui():
-                key = self.query_one("#api-key-input", Input).value.strip()
-                if not key:
-                    return "Melodify API key is required when Melodify is enabled"
-        return None
 
     @on(Input.Changed, "#server-name-input")
     def _on_name_changed(self, event: Input.Changed) -> None:
@@ -276,9 +196,9 @@ class SetupWizardScreen(Screen):
 
     @on(Input.Submitted, "#welcome-message-input")
     def _on_welcome_submitted(self, event: Input.Submitted) -> None:
-        """Move from the last options input to the template page."""
+        """Move from the last options input to the template picking."""
         event.stop()
-        self.action_next_step()
+        self.query_one("#template-radio-set", RadioSet).focus()
 
     @on(RadioSet.Changed, "#music-bot-radio-set")
     def _on_music_option_changed(self, event: RadioSet.Changed) -> None:
@@ -290,16 +210,6 @@ class SetupWizardScreen(Screen):
         """Update the channel preview when a template is selected."""
         self._update_template_preview()
         self._update_server_name_preview()
-
-
-
-    @on(Button.Pressed, "#btn-back")
-    def _on_back(self) -> None:
-        self.action_prev_step()
-
-    @on(Button.Pressed, "#btn-next")
-    def _on_next(self) -> None:
-        self.action_next_step()
 
     @on(Button.Pressed, "#btn-review")
     def _on_review(self) -> None:
@@ -319,26 +229,7 @@ class SetupWizardScreen(Screen):
 
     def action_go_back(self) -> None:
         """Handle Escape key."""
-        if self.current_step > 0:
-            self.action_prev_step()
-        else:
-            self.app.exit()
-
-    def action_prev_step(self) -> None:
-        """Navigate to the previous page."""
-        if self.current_step > 0:
-            self._save_current_step_data()
-            self._go_to_step(self.current_step - 1)
-
-    def action_next_step(self) -> None:
-        """Validate and navigate to the next page."""
-        error = self._validate_current_step()
-        if error:
-            self.notify(error, severity="error", title="Validation")
-            return
-        if self.current_step < TOTAL_STEPS - 1:
-            self._save_current_step_data()
-            self._go_to_step(self.current_step + 1)
+        self.app.exit()
 
     def _update_api_key_visibility(self) -> None:
         """Toggle the API key input visibility."""
@@ -364,7 +255,3 @@ class SetupWizardScreen(Screen):
         self.query_one("#template-preview", Static).update(
             f"[#c9d1d9]{escape(preview_text)}[/]"
         )
-
-    def jump_to_step(self, step: int) -> None:
-        """Public method for the review screen to jump back to a page."""
-        self._go_to_step(step)
