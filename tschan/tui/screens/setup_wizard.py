@@ -26,7 +26,6 @@ class AdvanceCheckbox(_Checkbox):
     def on_key(self, event: events.Key) -> None:
         if event.key == "enter":
             self.post_message(self.Submitted())
-        super().on_key(event)
 
 class AdvanceRadioButton(_RadioButton):
     class Submitted(Message):
@@ -34,7 +33,6 @@ class AdvanceRadioButton(_RadioButton):
     def on_key(self, event: events.Key) -> None:
         if event.key == "enter":
             self.post_message(self.Submitted())
-        super().on_key(event)
 
 from tschan.constants import (
     TEMPLATE_COZY_DEN,
