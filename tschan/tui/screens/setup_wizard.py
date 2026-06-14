@@ -22,17 +22,21 @@ from textual.widgets import (
 
 class AdvanceCheckbox(_Checkbox):
     class Submitted(Message):
-        pass
+        def __init__(self, checkbox: AdvanceCheckbox) -> None:
+            super().__init__()
+            self.checkbox = checkbox
     def on_key(self, event: events.Key) -> None:
         if event.key == "enter":
-            self.post_message(self.Submitted())
+            self.post_message(self.Submitted(self))
 
 class AdvanceRadioButton(_RadioButton):
     class Submitted(Message):
-        pass
+        def __init__(self, radio_button: AdvanceRadioButton) -> None:
+            super().__init__()
+            self.radio_button = radio_button
     def on_key(self, event: events.Key) -> None:
         if event.key == "enter":
-            self.post_message(self.Submitted())
+            self.post_message(self.Submitted(self))
 
 from tschan.constants import (
     TEMPLATE_COZY_DEN,
