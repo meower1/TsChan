@@ -5,19 +5,36 @@ from __future__ import annotations
 from pathlib import Path
 
 from rich.markup import escape
-from textual import on
+from textual.message import Message
+from textual import events, on
 from textual.app import ComposeResult
 from textual.containers import Horizontal, Vertical
 from textual.screen import Screen
 from textual.widgets import (
     Button,
-    Checkbox,
+    Checkbox as _Checkbox,
     Header,
     Input,
-    RadioButton,
+    RadioButton as _RadioButton,
     RadioSet,
     Static,
 )
+
+class AdvanceCheckbox(_Checkbox):
+    class Submitted(Message):
+        pass
+    def on_key(self, event: events.Key) -> None:
+        if event.key == "enter":
+            self.post_message(self.Submitted())
+        super().on_key(event)
+
+class AdvanceRadioButton(_RadioButton):
+    class Submitted(Message):
+        pass
+    def on_key(self, event: events.Key) -> None:
+        if event.key == "enter":
+            self.post_message(self.Submitted())
+        super().on_key(event)
 
 from tschan.constants import (
     TEMPLATE_COZY_DEN,
@@ -68,8 +85,8 @@ class SetupWizardScreen(Screen):
                 yield Static("Melodify music bot", classes="field-label")
                 with Horizontal(classes="inline-radio"):
                     with RadioSet(id="music-bot-radio-set"):
-                        yield RadioButton("Disabled", value=True, id="music-disable")
-                        yield RadioButton("Enabled", id="music-enable")
+                        yield AdvanceRadioButton("Disabled", value=True, id="music-disable")
+                        yield AdvanceRadioButton("Enabled", id="music-enable")
                 yield Input(
                     placeholder="Melodify API key",
                     id="api-key-input",
@@ -83,17 +100,17 @@ class SetupWizardScreen(Screen):
                     classes="helper-text",
                 )
                 with Horizontal(classes="inline-checkboxes"):
-                    yield Checkbox(
+                    yield AdvanceCheckbox(
                         _OPTIONAL_ROLE_LABELS[0],
                         id="role-games",
                         value=False,
                     )
-                    yield Checkbox(
+                    yield AdvanceCheckbox(
                         _OPTIONAL_ROLE_LABELS[1],
                         id="role-cozy",
                         value=False,
                     )
-                    yield Checkbox(
+                    yield AdvanceCheckbox(
                         _OPTIONAL_ROLE_LABELS[2],
                         id="role-nerd-corner",
                         value=False,
@@ -113,9 +130,9 @@ class SetupWizardScreen(Screen):
                     classes="helper-text",
                 )
                 with RadioSet(id="template-radio-set"):
-                    yield RadioButton(_TEMPLATE_LABELS[0], value=True, id="tmpl-0")
-                    yield RadioButton(_TEMPLATE_LABELS[1], id="tmpl-1")
-                    yield RadioButton(_TEMPLATE_LABELS[2], id="tmpl-2")
+                    yield AdvanceRadioButton(_TEMPLATE_LABELS[0], value=True, id="tmpl-0")
+                    yield AdvanceRadioButton(_TEMPLATE_LABELS[1], id="tmpl-1")
+                    yield AdvanceRadioButton(_TEMPLATE_LABELS[2], id="tmpl-2")
                 yield Static("", id="template-preview", classes="preview-panel")
 
         with Horizontal(classes="wizard-nav"):
@@ -148,7 +165,7 @@ class SetupWizardScreen(Screen):
             ("#role-games", "#role-cozy", "#role-nerd-corner"),
             strict=True,
         ):
-            if self.query_one(widget_id, Checkbox).value:
+            if self.query_one(widget_id, AdvanceCheckbox).value:
                 groups.append(role_key)
         self.config.role_groups = groups
 
@@ -199,6 +216,24 @@ class SetupWizardScreen(Screen):
         """Move from the last options input to the template picking."""
         event.stop()
         self.query_one("#template-radio-set", RadioSet).focus()
+
+    @on(AdvanceCheckbox.Submitted)
+    def _on_checkbox_submitted(self, event: AdvanceCheckbox.Submitted) -> None:
+        """Move focus when pressing enter on any checkbox."""
+        event.stop()
+        self.query_one("#welcome-message-input", Input).focus()
+
+    @on(AdvanceRadioButton.Submitted)
+    def _on_radio_submitted(self, event: AdvanceRadioButton.Submitted) -> None:
+        """Move focus when pressing enter on a radio button."""
+        event.stop()
+        if getattr(event.radio_button.parent, "id", None) == "music-bot-radio-set":
+            if self._music_enabled_from_ui():
+                self.query_one("#api-key-input", Input).focus()
+            else:
+                self.query_one("#role-games", AdvanceCheckbox).focus()
+        elif getattr(event.radio_button.parent, "id", None) == "template-radio-set":
+            self.query_one("#btn-review", Button).focus()
 
     @on(RadioSet.Changed, "#music-bot-radio-set")
     def _on_music_option_changed(self, event: RadioSet.Changed) -> None:
