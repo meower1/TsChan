@@ -5,6 +5,7 @@ import tempfile
 from pathlib import Path
 
 from tschan.models import SetupConfig
+from tschan.engine import config_writer
 from tschan.engine.config_writer import (
     generate_env,
     generate_docker_compose,
@@ -31,6 +32,23 @@ class TestGenerateEnv:
         assert "TSCHAN_PUID=" in env
         assert "TSCHAN_PGID=" in env
 
+    def test_root_uses_safe_container_file_ownership(self, monkeypatch):
+        monkeypatch.setattr(config_writer.os, "getuid", lambda: 0)
+        monkeypatch.setattr(config_writer.os, "getgid", lambda: 0)
+        config = SetupConfig(server_name="test")
+
+        env = generate_env(config)
+
+        assert "TSCHAN_PUID=503" in env
+        assert "TSCHAN_PGID=503" in env
+
+    def test_contains_iranian_pip_fallback(self):
+        config = SetupConfig(server_name="test", iran_mirrors=False)
+        env = generate_env(config)
+
+        assert "PIP_INDEX_URL=https://pypi.org/simple/" in env
+        assert "PIP_EXTRA_INDEX_URL=https://pypi.devneeds.ir/simple/" in env
+
     def test_music_bot_enabled(self):
         config = SetupConfig(
             server_name="test",
@@ -48,7 +66,8 @@ class TestGenerateEnv:
     def test_no_iran_mirrors(self):
         config = SetupConfig(server_name="test", iran_mirrors=False)
         env = generate_env(config)
-        assert "devneeds" not in env or "# " in env.split("devneeds")[0].split("\n")[-1]
+        assert "PIP_INDEX_URL=https://pypi.org/simple/" in env
+        assert "PIP_EXTRA_INDEX_URL=https://pypi.devneeds.ir/simple/" in env
 
 
 class TestGenerateDockerCompose:
@@ -67,6 +86,16 @@ class TestGenerateDockerCompose:
         compose = generate_docker_compose(config)
         assert "PUID" in compose
         assert "PGID" in compose
+
+    def test_sets_orchestrator_pip_fallback(self):
+        config = SetupConfig(
+            server_name="test",
+            music_bot_enabled=True,
+            melodify_api_key="key",
+        )
+        compose = generate_docker_compose(config)
+        assert "PIP_EXTRA_INDEX_URL" in compose
+        assert "pypi.devneeds.ir" in compose
 
     def test_music_bot_services_included(self):
         config = SetupConfig(

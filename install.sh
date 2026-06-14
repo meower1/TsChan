@@ -35,16 +35,9 @@ ok()    { echo -e "${GREEN}[✓]${NC}     $*"; }
 err()   { echo -e "${RED}[✗]${NC}     $*" >&2; }
 die()   { err "$@"; exit 1; }
 
-check_not_root() {
+warn_if_root() {
     if [ "${EUID:-$(id -u)}" -eq 0 ]; then
-        local target_user="${SUDO_USER:-<your-user>}"
-        die "Do not run this installer as root. Run it as your normal user:
-  cd /path/to/TsChan
-  ./install.sh
-
-If Docker permission fails, add the user to the docker group:
-  sudo usermod -aG docker ${target_user}
-  newgrp docker"
+        info "Running as root. tschan will be installed for root and will manage /root/tschan-server."
     fi
 }
 
@@ -104,7 +97,7 @@ do_install() {
     print_banner
 
     info "Checking prerequisites..."
-    check_not_root
+    warn_if_root
     check_python
     check_docker
     check_git

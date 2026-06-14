@@ -44,6 +44,19 @@ from tschan.constants import (
 from tschan.models import SetupConfig
 
 
+DEFAULT_CONTAINER_PUID = 503
+DEFAULT_CONTAINER_PGID = 503
+
+
+def _host_file_ids() -> tuple[int, int]:
+    """Return host ids to pass to images that create writable data files."""
+    uid = os.getuid()
+    gid = os.getgid()
+    if uid == 0:
+        return DEFAULT_CONTAINER_PUID, DEFAULT_CONTAINER_PGID
+    return uid, gid
+
+
 # ── .env Generation ──────────────────────────────────────────────────────────
 
 
@@ -65,6 +78,7 @@ def generate_env(config: SetupConfig) -> str:
     ts3_image = IRAN_TS3_IMAGE if config.iran_mirrors else DEFAULT_TS3_IMAGE
     python_image = IRAN_PYTHON_IMAGE if config.iran_mirrors else DEFAULT_PYTHON_IMAGE
     pip_index = IRAN_PIP_INDEX if config.iran_mirrors else DEFAULT_PIP_INDEX
+    puid, pgid = _host_file_ids()
 
     lines: list[str] = [
         "# ── tschan – auto-generated .env ─────────────────────────────────",
@@ -87,10 +101,11 @@ def generate_env(config: SetupConfig) -> str:
         f"TS3_IMAGE={ts3_image}",
         f"PYTHON_IMAGE={python_image}",
         f"PIP_INDEX_URL={pip_index}",
+        f"PIP_EXTRA_INDEX_URL={IRAN_PIP_INDEX}",
         "",
         "# Host file ownership",
-        f"TSCHAN_PUID={os.getuid()}",
-        f"TSCHAN_PGID={os.getgid()}",
+        f"TSCHAN_PUID={puid}",
+        f"TSCHAN_PGID={pgid}",
         "",
         "# Mirrors",
         f"IRAN_MIRRORS={'true' if config.iran_mirrors else 'false'}",
@@ -179,6 +194,7 @@ def _build_orchestrator_service(config: SetupConfig) -> dict[str, Any]:
             "TS3_QUERY_PASSWORD": config.query_password,
             "MELODIFY_API_KEY": config.melodify_api_key,
             "PIP_INDEX_URL": pip_index,
+            "PIP_EXTRA_INDEX_URL": IRAN_PIP_INDEX,
         },
         "volumes": [
             "./bot:/app:ro",

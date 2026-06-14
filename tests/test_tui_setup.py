@@ -1,9 +1,12 @@
 import asyncio
+import inspect
 from pathlib import Path
 
 from textual.app import App
 from textual.widgets import Input, Static
 
+import tschan.tui.screens.deploying as deploying_module
+import tschan.tui.screens.management as management_module
 from tschan.models import SetupConfig
 from tschan.tui.app import TschanApp
 from tschan.tui.screens.deploying import DeployingScreen
@@ -13,6 +16,16 @@ from tschan.tui.screens.setup_wizard import SetupWizardScreen
 
 def run_async(coro):
     return asyncio.run(coro)
+
+
+def test_threaded_screens_call_app_from_thread():
+    deploying_source = inspect.getsource(deploying_module)
+    management_source = inspect.getsource(management_module)
+
+    assert "self.call_from_thread" not in deploying_source
+    assert "self.call_from_thread" not in management_source
+    assert "self.app.call_from_thread" in deploying_source
+    assert "self.app.call_from_thread" in management_source
 
 
 def test_setup_uses_two_pages_and_project_dir(tmp_path: Path):
