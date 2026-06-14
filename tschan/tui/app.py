@@ -16,6 +16,7 @@ class TschanApp(App[None]):
     CSS_PATH = "styles/theme.tcss"
     TITLE = "tschan"
     SUB_TITLE = ""
+    ENABLE_COMMAND_PALETTE = False
 
     def __init__(
         self,

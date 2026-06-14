@@ -12,7 +12,6 @@ from textual.screen import Screen
 from textual.widgets import (
     Button,
     Checkbox,
-    Footer,
     Header,
     Input,
     RadioButton,
@@ -63,7 +62,7 @@ class SetupWizardScreen(Screen):
         self.current_step: int = 0
 
     def compose(self) -> ComposeResult:
-        yield Header()
+        yield Header(show_clock=False)
         yield Static(id="step-indicator")
 
         with VerticalScroll(id="step-0", classes="wizard-content"):
@@ -149,7 +148,7 @@ class SetupWizardScreen(Screen):
             yield Button("Next", id="btn-next", variant="primary")
             yield Button("Review", id="btn-review", variant="success")
 
-        yield Footer()
+
 
     def on_mount(self) -> None:
         """Initialize the wizard."""

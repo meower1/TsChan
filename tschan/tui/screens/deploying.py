@@ -10,7 +10,7 @@ from textual import work
 from textual.app import ComposeResult
 from textual.containers import VerticalScroll
 from textual.screen import Screen
-from textual.widgets import Footer, Header, ProgressBar, RichLog, Static
+from textual.widgets import Header, ProgressBar, RichLog, Static
 
 from tschan.constants import DEFAULT_QUERY_PORT_RAW
 from tschan.models import SetupConfig
@@ -47,7 +47,7 @@ class DeployingScreen(Screen):
         self._log_path = self.project_dir / DEPLOY_LOG_FILE
 
     def compose(self) -> ComposeResult:
-        yield Header()
+        yield Header(show_clock=False)
         yield Static("Deploying Your Server", classes="step-title")
         yield Static(
             "[#8b949e]Keep this window open until deployment finishes.[/]",
@@ -84,7 +84,7 @@ class DeployingScreen(Screen):
                 wrap=True,
             )
 
-        yield Footer()
+
 
     def on_mount(self) -> None:
         """Start the deployment worker."""
@@ -125,7 +125,7 @@ class DeployingScreen(Screen):
         """Log from the deployment worker thread."""
         line = f"[{time.strftime('%H:%M:%S')}] {message}"
         self._write_log_line(line)
-        self.call_from_thread(self._append_log_ui_only, line)
+        self.app.call_from_thread(self._append_log_ui_only, line)
 
     def _append_log_ui_only(self, line: str) -> None:
         """Append a preformatted line to the visible log only."""
@@ -186,24 +186,24 @@ class DeployingScreen(Screen):
             self._log_from_worker("Deployment worker is running.")
             self._log_from_worker(f"Project directory: {project_dir}")
             # Step 0: Write configuration files
-            self.call_from_thread(self._set_step_active, 0)
+            self.app.call_from_thread(self._set_step_active, 0)
             from tschan.engine.config_writer import write_all
 
             self._log_from_worker("Writing .env, docker-compose.yml, state, and TS3 data files.")
             write_all(config, project_dir)
             time.sleep(0.3)
-            self.call_from_thread(self._set_step_done, 0)
+            self.app.call_from_thread(self._set_step_done, 0)
 
             # Step 1: Create data directory
-            self.call_from_thread(self._set_step_active, 1)
+            self.app.call_from_thread(self._set_step_active, 1)
             data_dir = project_dir / "ts3-data"
             self._log_from_worker(f"Ensuring data directory exists: {data_dir}")
             data_dir.mkdir(exist_ok=True)
             time.sleep(0.2)
-            self.call_from_thread(self._set_step_done, 1)
+            self.app.call_from_thread(self._set_step_done, 1)
 
             # Step 2: Start Docker containers
-            self.call_from_thread(self._set_step_active, 2)
+            self.app.call_from_thread(self._set_step_active, 2)
             from tschan.engine.docker_ctl import DockerController
 
             docker = DockerController(project_dir)
@@ -211,17 +211,17 @@ class DeployingScreen(Screen):
             self._log_from_worker("Docker image pulls/builds can take several minutes on first run.")
             docker.compose_up(build=True, on_output=self._log_docker_output)
             self._log_from_worker("Docker compose up finished successfully.")
-            self.call_from_thread(self._set_step_done, 2)
+            self.app.call_from_thread(self._set_step_done, 2)
 
             # Step 3: Wait for TS3 to be ready
-            self.call_from_thread(self._set_step_active, 3)
+            self.app.call_from_thread(self._set_step_active, 3)
             self._log_from_worker("Waiting for TeamSpeak ServerQuery login to succeed.")
             self._wait_for_ts3(docker)
             self._log_from_worker("TeamSpeak ServerQuery is ready.")
-            self.call_from_thread(self._set_step_done, 3)
+            self.app.call_from_thread(self._set_step_done, 3)
 
             # Step 4: Configure server
-            self.call_from_thread(self._set_step_active, 4)
+            self.app.call_from_thread(self._set_step_active, 4)
             from tschan.engine.ts3_query import TS3QueryClient
 
             self._log_from_worker("Connecting to ServerQuery for channel and role setup.")
@@ -235,30 +235,30 @@ class DeployingScreen(Screen):
             privilege_key = client.setup_server(config)
             client.disconnect()
             self._log_from_worker("Server channels, roles, and metadata configured.")
-            self.call_from_thread(self._set_step_done, 4)
+            self.app.call_from_thread(self._set_step_done, 4)
 
             # Step 5: Generate privilege key
-            self.call_from_thread(self._set_step_active, 5)
+            self.app.call_from_thread(self._set_step_active, 5)
             self.privilege_key = privilege_key
             self._log_from_worker("Privilege key generated.")
             time.sleep(0.3)
-            self.call_from_thread(self._set_step_done, 5)
+            self.app.call_from_thread(self._set_step_done, 5)
 
             # Step 6: Complete!
-            self.call_from_thread(self._set_step_active, 6)
+            self.app.call_from_thread(self._set_step_active, 6)
             self._log_from_worker("Deployment completed successfully.")
-            self.call_from_thread(self._set_step_done, 6)
+            self.app.call_from_thread(self._set_step_done, 6)
             time.sleep(0.5)
 
             # Navigate to privilege key screen
-            self.call_from_thread(self._show_privilege_key)
+            self.app.call_from_thread(self._show_privilege_key)
 
         except Exception as exc:
             error_msg = str(exc)
             self._log_from_worker(f"Deployment failed: {type(exc).__name__}: {error_msg}")
             for line in traceback.format_exc().splitlines():
                 self._log_from_worker(line)
-            self.call_from_thread(self._show_error, error_msg)
+            self.app.call_from_thread(self._show_error, error_msg)
 
     def _wait_for_ts3(self, docker: object) -> None:
         """Poll until ServerQuery accepts login and server selection."""

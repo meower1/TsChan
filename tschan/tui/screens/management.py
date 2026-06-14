@@ -7,10 +7,10 @@ from pathlib import Path
 
 from textual import on, work
 from textual.app import ComposeResult
-from textual.containers import Grid, Horizontal, Vertical, VerticalScroll
+from textual.containers import Horizontal, Vertical, VerticalScroll
 from textual.screen import Screen
 from textual.timer import Timer
-from textual.widgets import Button, Footer, Header, Label, RichLog, Static
+from textual.widgets import Button, Header, Label, RichLog, Static
 
 from tschan.constants import DATA_DIR, ENV_FILE, STATE_FILE, DEFAULT_QUERY_PORT_RAW
 from tschan.models import SetupConfig
@@ -68,7 +68,6 @@ class ManagementScreen(Screen):
     BINDINGS = [
         ("q", "quit_app", "Quit"),
         ("r", "refresh_status", "Refresh"),
-        ("l", "toggle_logs", "Logs"),
     ]
 
     def __init__(self, config: SetupConfig, project_dir: Path) -> None:
@@ -78,7 +77,7 @@ class ManagementScreen(Screen):
         self._refresh_timer: Timer | None = None
 
     def compose(self) -> ComposeResult:
-        yield Header()
+        yield Header(show_clock=False)
 
         yield Static(
             "[bold #f0f6fc]tschan Management[/]",
@@ -103,55 +102,49 @@ class ManagementScreen(Screen):
                     classes="muted-text",
                 )
 
-            # ── Action Buttons ───────────────────────────────────
-            with Grid(classes="management-grid"):
+            # ── Action Buttons ───────────────────────────────────────
+            with Horizontal(classes="management-primary"):
                 yield Button(
-                    "Start Server",
+                    "Start",
                     id="btn-start",
                     variant="success",
-                    classes="management-action",
                 )
                 yield Button(
-                    "Stop Server",
+                    "Stop",
                     id="btn-stop",
                     variant="error",
-                    classes="management-action",
                 )
                 yield Button(
-                    "Restart Server",
+                    "Restart",
                     id="btn-restart",
                     variant="warning",
-                    classes="management-action",
                 )
+
+            with Horizontal(classes="management-secondary"):
                 yield Button(
-                    "Refresh Status",
+                    "Refresh",
                     id="btn-refresh",
                     variant="default",
-                    classes="management-action",
                 )
                 yield Button(
-                    "View Logs",
+                    "Logs",
                     id="btn-logs",
                     variant="default",
-                    classes="management-action",
                 )
                 yield Button(
-                    "New Privilege Key",
+                    "New Key",
                     id="btn-key",
                     variant="default",
-                    classes="management-action",
                 )
                 yield Button(
                     "Uninstall",
                     id="btn-uninstall",
                     variant="error",
-                    classes="management-action",
                 )
                 yield Button(
                     "Exit",
                     id="btn-exit",
                     variant="default",
-                    classes="management-action",
                 )
 
             # ── Log Viewer ───────────────────────────────────────
@@ -162,7 +155,6 @@ class ManagementScreen(Screen):
                 markup=True,
             )
 
-        yield Footer()
 
     def on_mount(self) -> None:
         """Initialize the status display and start auto-refresh."""
@@ -205,7 +197,7 @@ class ManagementScreen(Screen):
                 status_text = "[bold #f85149]● Stopped[/]"
                 container_info = "[#8b949e]No containers running[/]"
 
-            self.call_from_thread(
+            self.app.call_from_thread(
                 self._set_status, status_text, container_info
             )
 
@@ -223,7 +215,7 @@ class ManagementScreen(Screen):
                     client.connect()
                     info = client.get_server_info()
                     client.disconnect()
-                    self.call_from_thread(
+                    self.app.call_from_thread(
                         self._set_clients,
                         f"[#8b949e]Clients:[/] [#f0f6fc]{info.clients_online}"
                         f"/{info.max_clients}[/]  ·  "
@@ -232,12 +224,12 @@ class ManagementScreen(Screen):
                         f"{(info.uptime_seconds % 3600) // 60}m[/]",
                     )
                 except Exception:
-                    self.call_from_thread(
+                    self.app.call_from_thread(
                         self._set_clients,
                         "[#8b949e]Could not query server info[/]",
                     )
         except Exception as exc:
-            self.call_from_thread(
+            self.app.call_from_thread(
                 self._set_status,
                 "[bold #f85149]● Error[/]",
                 f"[#f85149]{exc}[/]",
@@ -315,33 +307,33 @@ class ManagementScreen(Screen):
             docker = DockerController(self.project_dir)
 
             if action == "start":
-                self.call_from_thread(
+                self.app.call_from_thread(
                     self.notify, "Starting server...", title="Start"
                 )
                 docker.compose_up(build=False)
-                self.call_from_thread(
+                self.app.call_from_thread(
                     self.notify,
                     "Server started.",
                     title="Done",
                     severity="information",
                 )
             elif action == "stop":
-                self.call_from_thread(
+                self.app.call_from_thread(
                     self.notify, "Stopping server...", title="Stop"
                 )
                 docker.compose_down(volumes=False)
-                self.call_from_thread(
+                self.app.call_from_thread(
                     self.notify,
                     "Server stopped.",
                     title="Done",
                     severity="information",
                 )
             elif action == "restart":
-                self.call_from_thread(
+                self.app.call_from_thread(
                     self.notify, "Restarting server...", title="Restart"
                 )
                 docker.compose_restart()
-                self.call_from_thread(
+                self.app.call_from_thread(
                     self.notify,
                     "Server restarted.",
                     title="Done",
@@ -349,10 +341,10 @@ class ManagementScreen(Screen):
                 )
 
             # Refresh status after action
-            self.call_from_thread(self._refresh_status)
+            self.app.call_from_thread(self._refresh_status)
 
         except Exception as exc:
-            self.call_from_thread(
+            self.app.call_from_thread(
                 self.notify,
                 f"Docker error: {exc}",
                 title="Error",
@@ -367,9 +359,9 @@ class ManagementScreen(Screen):
 
             docker = DockerController(self.project_dir)
             logs = docker.compose_logs(tail=100)
-            self.call_from_thread(self._display_logs, logs)
+            self.app.call_from_thread(self._display_logs, logs)
         except Exception as exc:
-            self.call_from_thread(
+            self.app.call_from_thread(
                 self._display_logs,
                 f"Error fetching logs: {exc}",
             )
@@ -387,7 +379,7 @@ class ManagementScreen(Screen):
         try:
             from tschan.engine.ts3_query import TS3QueryClient
 
-            self.call_from_thread(
+            self.app.call_from_thread(
                 self.notify, "Generating privilege key...", title="Privilege key"
             )
 
@@ -401,10 +393,10 @@ class ManagementScreen(Screen):
             key = client.generate_privilege_key(group_name="Dev")
             client.disconnect()
 
-            self.call_from_thread(self._show_new_key, key)
+            self.app.call_from_thread(self._show_new_key, key)
 
         except Exception as exc:
-            self.call_from_thread(
+            self.app.call_from_thread(
                 self.notify,
                 f"Failed to generate key: {exc}",
                 title="Error",
@@ -432,7 +424,7 @@ class ManagementScreen(Screen):
     def _do_uninstall(self) -> None:
         """Perform the actual uninstall."""
         try:
-            self.call_from_thread(
+            self.app.call_from_thread(
                 self.notify, "Uninstalling server...", title="Uninstall"
             )
 
@@ -458,7 +450,7 @@ class ManagementScreen(Screen):
                 if fpath.exists():
                     fpath.unlink()
 
-            self.call_from_thread(
+            self.app.call_from_thread(
                 self.notify,
                 "Server uninstalled successfully.",
                 title="Done",
@@ -469,10 +461,10 @@ class ManagementScreen(Screen):
             import time
 
             time.sleep(1.5)
-            self.call_from_thread(self.app.exit)
+            self.app.call_from_thread(self.app.exit)
 
         except Exception as exc:
-            self.call_from_thread(
+            self.app.call_from_thread(
                 self.notify,
                 f"Uninstall error: {exc}",
                 title="Error",

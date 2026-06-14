@@ -10,7 +10,7 @@ from textual import on
 from textual.app import ComposeResult
 from textual.containers import Horizontal, VerticalScroll
 from textual.screen import Screen
-from textual.widgets import Button, Footer, Header, Static
+from textual.widgets import Button, Header, Static
 
 from tschan.constants import TEMPLATE_SERVER_NAME_SUFFIX
 from tschan.models import SetupConfig
@@ -52,7 +52,7 @@ class ReviewScreen(Screen):
         self.project_dir = Path(project_dir).expanduser().resolve()
 
     def compose(self) -> ComposeResult:
-        yield Header()
+        yield Header(show_clock=False)
         yield Static("Review Your Setup", classes="step-title")
         yield Static(
             "Confirm these values before deployment.",
@@ -118,7 +118,7 @@ class ReviewScreen(Screen):
             yield Button("Back to Setup", id="btn-review-back", variant="default")
             yield Button("Deploy", id="btn-deploy", variant="success")
 
-        yield Footer()
+
 
     def _server_name_value(self) -> str:
         name = self.config.server_name.strip()

@@ -7,7 +7,7 @@ from pathlib import Path
 from textual.app import ComposeResult
 from textual.containers import Vertical, Center
 from textual.screen import Screen
-from textual.widgets import Button, Footer, Header, Static
+from textual.widgets import Button, Header, Static
 
 
 class PrivilegeKeyScreen(Screen):
@@ -29,7 +29,7 @@ class PrivilegeKeyScreen(Screen):
         self.server_name = server_name
 
     def compose(self) -> ComposeResult:
-        yield Header()
+        yield Header(show_clock=False)
         with Center():
             with Vertical(id="key-container"):
                 yield Static(
@@ -64,7 +64,7 @@ class PrivilegeKeyScreen(Screen):
                     id="btn-continue",
                     variant="primary",
                 )
-        yield Footer()
+
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         if event.button.id == "btn-continue":
