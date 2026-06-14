@@ -147,6 +147,11 @@ Checkbox:focus {
     color: #f8fafc;
 }
 
+RadioButton.-on > .toggle--button,
+Checkbox.-on > .toggle--button {
+    color: #f472b6;
+}
+
 RadioSet {
     background: transparent;
     border: none;

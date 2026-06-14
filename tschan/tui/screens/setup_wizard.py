@@ -190,9 +190,9 @@ class SetupWizardScreen(Screen):
 
     @on(Input.Submitted, "#api-key-input")
     def _on_api_key_submitted(self, event: Input.Submitted) -> None:
-        """Move from API key to welcome message."""
+        """Move from API key to cosmetic roles."""
         event.stop()
-        self.query_one("#welcome-message-input", Input).focus()
+        self.query_one("#role-games", Checkbox).focus()
 
     @on(Input.Submitted, "#welcome-message-input")
     def _on_welcome_submitted(self, event: Input.Submitted) -> None:
